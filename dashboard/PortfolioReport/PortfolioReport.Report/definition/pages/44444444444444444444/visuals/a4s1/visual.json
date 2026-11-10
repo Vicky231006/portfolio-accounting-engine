@@ -1,0 +1,270 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a4s1",
+  "position": {
+    "x": 10,
+    "y": 400,
+    "z": 1000,
+    "height": 270,
+    "width": 620,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "band_label"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.band_label",
+              "nativeQueryRef": "Drawdown band (Q1-Q5)",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "Median XIRR-TWR Difference (bp)"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.Median XIRR-TWR Difference (bp)",
+              "nativeQueryRef": "Median XIRR-TWR Difference (bp)"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "observations"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.observations",
+              "nativeQueryRef": "Observation count (n)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "min_drawdown_bp"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.min_drawdown_bp",
+              "nativeQueryRef": "Min drawdown (bp)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "max_drawdown_bp"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.max_drawdown_bp",
+              "nativeQueryRef": "Max drawdown (bp)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "median_abs_xirr_minus_twr_bp"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.median_abs_xirr_minus_twr_bp",
+              "nativeQueryRef": "Median absolute difference (bp)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "p95_abs_xirr_minus_twr_bp"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.p95_abs_xirr_minus_twr_bp",
+              "nativeQueryRef": "P95 absolute difference (bp)"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "SensitivityE9Quintiles"
+                  }
+                },
+                "Property": "band_order"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "axisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Drawdown band (Q1 = lowest, Q5 = highest)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "axisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Median XIRR-TWR Difference (bp)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "referenceLine": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "lineColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#666666'"
+                    }
+                  }
+                }
+              }
+            },
+            "displayName": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Zero'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'XIRR-TWR Difference by Drawdown Band'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'654 solved observations · Empirical drawdown quintiles · Signed: annualised XIRR minus period TWR (same 12-mo SIP window), bp'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

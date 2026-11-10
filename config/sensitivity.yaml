@@ -1,0 +1,117 @@
+# Pre-registered sensitivity study configuration.
+#
+# STATUS: frozen 2026-11-09. SHA-256 of this file (frozen) must be recorded in
+# RESULTS.md and the pipeline provenance. Do not change it after inspecting results.
+#
+# Interpretation limits:
+# - Correction magnitudes are controlled generator parameters, not observed real-world
+#   transaction-error rates.
+# - The study measures sensitivity of reported returns to controlled errors. It does not
+#   measure user benefit, client outcomes, investment performance or regulatory compliance.
+
+version: 1
+status: frozen
+study_id: sensitivity-v1
+seed: 20261109
+
+paths:
+  plan_type: DIRECT
+  option_type: GROWTH
+  categories:
+    - Large Cap
+    - Large & Mid Cap
+    - Mid Cap
+    - Small Cap
+    - Multi Cap
+    - Flexi Cap
+    - Focused
+    - Value
+    - Contra
+    - Dividend Yield
+    - ELSS
+  # Eligibility is applied from the imported NAV data, not from a hard-coded scheme list.
+  min_observations: 750          # about three years of trading days
+  min_first_nav_date: "2014-01-01"
+  max_paths: 30
+  selection_rule: >-
+    Eligible schemes are Direct-Growth schemes in the listed categories with at least
+    min_observations NAV observations and a first NAV date on or before min_first_nav_date.
+    If the eligible count exceeds max_paths, select a seeded sample without replacement.
+    Report the eligible count, selected count and the excluded reasons.
+
+windows:
+  length_months: 12
+  # Fixed grid: first available NAV date on or after the first calendar day of each
+  # quarter from 2016-01-01 through 2025-10-01. The window end is the last available NAV
+  # date on or before start + 12 months, subject to the stale-NAV policy.
+  start_rule: first_available_nav_on_or_after_quarter_start
+  start_from: "2016-01-01"
+  start_to: "2025-10-01"
+
+investor:
+  monthly_sip_amount: "10000.00"
+  sip_day_rule: first_business_day_of_month
+  terminal_valuation: last_available_nav_on_or_before_window_end
+
+scenarios:
+  - id: backdate_one_instalment
+    description: >-
+      Shift one SIP instalment's effective date later by d business days, recompute its
+      units using the NAV on the shifted date, and leave all other instalments correct.
+    parameter: d_business_days
+    values: [1, 2, 3, 5]
+
+  - id: mis_size_one_instalment
+    description: >-
+      Multiply one SIP instalment's amount by (1 + x/100), recompute its units at the
+      same allotment NAV, and leave all other instalments correct.
+    parameter: x_percent
+    values: ["-10", "-5", "-1", "1", "5", "10"]
+
+  - id: missed_correction
+    description: >-
+      The ledger receives the correction, but the report uses the pre-correction flow
+      set (a stale report input). This measures the effect of a missed correction on the
+      reported return.
+    parameter: enabled
+    values: [true]
+
+measures:
+  - twr
+  - modified_dietz
+  - xirr
+
+thresholds_bp: [5, 10, 25, 50, 100]
+
+statistics:
+  sample_size: true
+  median_signed_bp: true
+  median_absolute_bp: true
+  p95_absolute_bp: true
+  share_exceeding_thresholds: true
+  percentile_method: linear_interpolation_between_order_statistics
+  report_failures: true
+  report_insufficient_paths: true
+
+outputs:
+  results_file: RESULTS.md
+  detail_file: results/sensitivity_detail.csv
+  summary_file: results/sensitivity_summary.csv
+  include_scenario_definitions: true
+  include_pre_registration_hash: true
+  include_interpretation_limits: true
+
+# E9: XIRR minus TWR under deterministic SIP schedules across real market windows.
+xirr_vs_twr:
+  enabled: true
+  group_by: window_start
+  report_distribution: true
+  relate_to_window_drawdown: true
+  drawdown_definition: max_peak_to_trough_nav_decline_within_window
+
+# Guardrails: the pipeline must fail if any of these are violated.
+guardrails:
+  require_all_scenarios_reported: true
+  require_n_per_scenario: true
+  require_frozen_config_for_run: true
+  forbid_post_hoc_scenario_changes: true

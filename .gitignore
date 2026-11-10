@@ -1,0 +1,69 @@
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Raw NAV / data inputs (AMFI/FundLens; do not commit raw source files)
+data/
+**/raw/
+**/raw_nav*/
+*.gz
+*.zip
+*.7z
+*.tar
+amfi_nav_*.txt
+amfi_nav_*.csv
+
+# Database (local volumes, dumps, temp DB artifacts)
+*.sql.bak
+*.dump
+*.bak
+*.backup
+pgdata/
+postgres-data/
+db_data/
+docker-data/
+*.sqlite
+*.sqlite3
+
+# Power BI (exclude data-bearing binaries and local caches; keep PBIP definitions)
+*.pbix
+*.pbit
+**/.pbi/
+**/.pbi-cache/
+**/localSettings.json
+**/.Report/cache.abf
+**/.Report/item.metadata.json.bak
+
+# OS / editor / temp
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+*.log
+
+# Local runtime artefacts
+logs/
+output/
+tmp/
+temp/
+.docker/
+docker-compose.override.yml
+.nav_cmp_tmp/
+

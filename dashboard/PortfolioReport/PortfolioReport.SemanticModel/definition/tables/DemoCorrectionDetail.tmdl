@@ -1,0 +1,46 @@
+table DemoCorrectionDetail
+	lineageTag: 20000000-0000-4000-8000-000000000007
+
+	column affected_txn_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: affected_txn_id
+
+	column prior_revision
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: prior_revision
+
+	column new_revision
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: new_revision
+
+	column correction_type
+		dataType: string
+		summarizeBy: none
+		sourceColumn: correction_type
+
+	column correction_reason
+		dataType: string
+		summarizeBy: none
+		sourceColumn: correction_reason
+
+	column replay_status
+		dataType: string
+		summarizeBy: none
+		sourceColumn: replay_status
+
+	column correction_group_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: correction_group_id
+
+	partition DemoCorrectionDetail = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database("localhost:5434", "bitemporal_ledger"),
+					Data = Source{[Schema="marts", Item="demo_correction_detail"]}[Data]
+				in
+					Data

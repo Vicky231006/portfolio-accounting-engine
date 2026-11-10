@@ -1,0 +1,52 @@
+table PortfolioHistory
+	lineageTag: 20000000-0000-4000-8000-000000000001
+
+	measure 'Selected Account Cash Balance' = VAR d = MAX(PortfolioHistory[valuation_date]) RETURN CALCULATE(SUM(PortfolioHistory[cash]), PortfolioHistory[valuation_date] = d)
+		formatString: "₹"#,0.00
+
+	column account_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: account_id
+
+	column valuation_date
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: valuation_date
+
+	column total_value
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: total_value
+		formatString: "₹"#,0.00
+
+	column cash
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: cash
+		formatString: "₹"#,0.00
+
+	column holdings_value
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: holdings_value
+		formatString: "₹"#,0.00
+
+	column stale_value
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: stale_value
+
+	column status
+		dataType: string
+		summarizeBy: none
+		sourceColumn: status
+
+	partition PortfolioHistory = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database("localhost:5434", "bitemporal_ledger"),
+					Data = Source{[Schema="marts", Item="portfolio_history"]}[Data]
+				in
+					Data

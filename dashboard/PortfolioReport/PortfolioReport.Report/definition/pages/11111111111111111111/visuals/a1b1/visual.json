@@ -1,0 +1,79 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a1b1",
+  "position": {
+    "x": 10,
+    "y": 375,
+    "z": 2000,
+    "width": 620,
+    "height": 295,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AssetAllocation"
+                    }
+                  },
+                  "Property": "scheme_display"
+                }
+              },
+              "queryRef": "AssetAllocation.scheme_display",
+              "nativeQueryRef": "Scheme",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AssetAllocation"
+                    }
+                  },
+                  "Property": "Allocation Market Value"
+                }
+              },
+              "queryRef": "AssetAllocation.Allocation Market Value",
+              "nativeQueryRef": "Market Value (INR)"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Portfolio Allocation by Scheme (Top 10 + Other)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

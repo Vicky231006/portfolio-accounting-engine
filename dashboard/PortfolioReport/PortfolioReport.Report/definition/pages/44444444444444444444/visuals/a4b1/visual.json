@@ -1,0 +1,79 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a4b1",
+  "position": {
+    "x": 10,
+    "y": 130,
+    "z": 1000,
+    "width": 600,
+    "height": 260,
+    "tabOrder": 1005
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityDetail"
+                    }
+                  },
+                  "Property": "parameter_value"
+                }
+              },
+              "queryRef": "SensitivityDetail.parameter_value",
+              "nativeQueryRef": "Scenario / Parameter",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityDetail"
+                    }
+                  },
+                  "Property": "Median |ΔXIRR| (bp), precomputed"
+                }
+              },
+              "queryRef": "SensitivityDetail.Median |ΔXIRR| (bp), precomputed",
+              "nativeQueryRef": "Median |ΔXIRR| (bp), precomputed per parameter"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Median |ΔXIRR| by Scenario Parameter (precomputed)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

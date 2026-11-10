@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a2c2",
+  "position": {
+    "x": 830,
+    "y": 10,
+    "z": 1000,
+    "width": 230,
+    "height": 100,
+    "tabOrder": 600
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "PortfolioHistory"
+                    }
+                  },
+                  "Property": "Selected Account Cash Balance"
+                }
+              },
+              "queryRef": "PortfolioHistory.Selected Account Cash Balance",
+              "nativeQueryRef": "Cash Balance (INR, selected account latest date)"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Cash Balance (Selected, Latest)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

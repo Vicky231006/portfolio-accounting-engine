@@ -1,0 +1,60 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+
+annotation PBI_ProTooling = ["DevMode"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+ref table PortfolioOverview
+
+ref table AccountDrilldown
+
+ref table RestatementAudit
+
+ref table PerformanceSummary
+
+ref table CashFlows
+
+ref table HoldingsSnapshot
+
+ref table RejectedCorrections
+
+ref table ReportSnapshots
+
+ref table Sensitivity
+
+ref table SensitivityDetail
+
+ref table SensitivityMeta
+
+
+
+ref table PortfolioHistory
+
+
+
+ref table PortfolioHistoryTotal
+
+
+
+ref table HoldingsLatest
+
+
+
+ref table MonthlyFlows
+
+
+
+ref table AssetAllocation
+
+
+
+ref table RestatementComparison
+
+
+
+ref table DemoCorrectionDetail
+
+ref table SensitivityE9Quintiles

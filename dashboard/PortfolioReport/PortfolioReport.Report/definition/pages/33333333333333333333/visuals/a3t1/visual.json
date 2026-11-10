@@ -1,0 +1,271 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a3t1",
+  "position": {
+    "x": 10,
+    "y": 110,
+    "z": 1000,
+    "width": 1260,
+    "height": 170,
+    "tabOrder": 1600
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "account_id"
+                }
+              },
+              "queryRef": "RestatementComparison.account_id",
+              "nativeQueryRef": "Account"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "period_start"
+                }
+              },
+              "queryRef": "RestatementComparison.period_start",
+              "nativeQueryRef": "Period Start"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "period_end"
+                }
+              },
+              "queryRef": "RestatementComparison.period_end",
+              "nativeQueryRef": "Period End"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "k1"
+                }
+              },
+              "queryRef": "RestatementComparison.k1",
+              "nativeQueryRef": "K1 (Original Knowledge Time)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "k2"
+                }
+              },
+              "queryRef": "RestatementComparison.k2",
+              "nativeQueryRef": "K2 (Restated Knowledge Time)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "original_total_value"
+                }
+              },
+              "queryRef": "RestatementComparison.original_total_value",
+              "nativeQueryRef": "Original Total Value (INR)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "restated_total_value"
+                }
+              },
+              "queryRef": "RestatementComparison.restated_total_value",
+              "nativeQueryRef": "Restated Total Value (INR)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "delta_total_value"
+                }
+              },
+              "queryRef": "RestatementComparison.delta_total_value",
+              "nativeQueryRef": "Δ Total Value (INR)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "original_cash"
+                }
+              },
+              "queryRef": "RestatementComparison.original_cash",
+              "nativeQueryRef": "Original Cash (INR)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "restated_cash"
+                }
+              },
+              "queryRef": "RestatementComparison.restated_cash",
+              "nativeQueryRef": "Restated Cash (INR)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "delta_cash"
+                }
+              },
+              "queryRef": "RestatementComparison.delta_cash",
+              "nativeQueryRef": "Δ Cash (INR)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "original_twr"
+                }
+              },
+              "queryRef": "RestatementComparison.original_twr",
+              "nativeQueryRef": "Original TWR (%)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "restated_twr"
+                }
+              },
+              "queryRef": "RestatementComparison.restated_twr",
+              "nativeQueryRef": "Restated TWR (%)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "delta_twr_bp"
+                }
+              },
+              "queryRef": "RestatementComparison.delta_twr_bp",
+              "nativeQueryRef": "Δ TWR (bp)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "delta_twr_pp"
+                }
+              },
+              "queryRef": "RestatementComparison.delta_twr_pp",
+              "nativeQueryRef": "Δ TWR (pp)"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'K1/K2 Original vs Restated (same account & period)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a1l2",
+  "position": {
+    "x": 640,
+    "y": 115,
+    "z": 2000,
+    "width": 630,
+    "height": 250,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MonthlyFlows"
+                    }
+                  },
+                  "Property": "month"
+                }
+              },
+              "queryRef": "MonthlyFlows.month",
+              "nativeQueryRef": "Month",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MonthlyFlows"
+                    }
+                  },
+                  "Property": "Monthly Contributions"
+                }
+              },
+              "queryRef": "MonthlyFlows.Monthly Contributions",
+              "nativeQueryRef": "Monthly Contributions (INR)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "MonthlyFlows"
+                    }
+                  },
+                  "Property": "Monthly Withdrawals"
+                }
+              },
+              "queryRef": "MonthlyFlows.Monthly Withdrawals",
+              "nativeQueryRef": "Monthly Withdrawals (INR)"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Monthly Contributions and Withdrawals'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

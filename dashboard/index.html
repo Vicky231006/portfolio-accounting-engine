@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>bitemporal-ledger — Portfolio Accounting & Performance Dashboard</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,system-ui,-apple-system,sans-serif;background:#0b0f14;color:#e7ecf3}
+header{padding:18px 24px;border-bottom:1px solid #232a35;background:#0f141c}
+h1{margin:0;font-size:20px} .subtitle{color:#9fb0c6;font-size:12px;margin-top:4px}
+nav{display:flex;gap:6px;padding:10px 24px;border-bottom:1px solid #232a35;background:#0f141c;position:sticky;top:0}
+nav button{background:#18202b;color:#cfe0f5;border:1px solid #2a3442;padding:8px 12px;border-radius:8px;cursor:pointer}
+nav button.active{background:#234b7a;border-color:#3f78b5;color:#fff}
+main{padding:22px 24px} .page{display:none} .page.active{display:block}
+.cards{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0 18px}
+.card{background:#121925;border:1px solid #243041;border-radius:10px;padding:14px 16px;min-width:170px}
+.card .n{font-size:28px;font-weight:700;color:#fff}.card .l{color:#9fb0c6;font-size:12px;margin-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel{background:#121925;border:1px solid #243041;border-radius:10px;padding:14px 16px;margin:10px 0}
+h2{margin:0 0 8px;font-size:18px} h3{margin:0 0 10px;font-size:14px;color:#d7e6f7}
+.bar{display:flex;align-items:center;gap:10px;margin:6px 0}.bar .lbl{width:140px;color:#cfe0f5;font-size:13px}
+.bar .track{flex:1;background:#1b2430;border-radius:6px;height:14px;overflow:hidden}.bar .fill{display:block;height:100%;background:linear-gradient(90deg,#2f6fb3,#63a6e8)}
+.bar .val{width:70px;text-align:right;color:#9fb0c6;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px} th,td{padding:8px;border-bottom:1px solid #243041;text-align:left}
+th{color:#9fb0c6;font-weight:600}
+.note{color:#a8b7c9;font-size:13px;line-height:1.5;margin:8px 0}.footer{color:#7f93ab;font-size:12px;margin-top:18px;border-top:1px solid #232a35;padding-top:10px}
+.pre{white-space:pre-wrap;color:#b9c7d8;font-size:12px;line-height:1.45;margin:0}
+ul.note{margin:8px 0 0 18px;padding:0}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+</style></head><body>
+<header><h1>Portfolio Accounting &amp; Performance Engine — Dashboard</h1>
+<div class="subtitle">Synthetic portfolio data; real AMFI NAV inputs. Educational prototype, not investment advice or a regulatory/compliance system. PostgreSQL-only marts (127.0.0.1:5434/bitemporal_ledger).</div></header>
+<nav>
+  <button class="active" data-p="p1">1 Overview</button>
+  <button data-p="p2">2 Account Drilldown</button>
+  <button data-p="p3">3 Restatements &amp; Audit</button>
+  <button data-p="p4">4 Sensitivity</button>
+</nav>
+<main>
+  <section id="p1" class="page active"><h2>1. Portfolio Overview</h2><div class='cards'><div class='card'><div class='n'>12</div><div class='l'>Synthetic accounts</div></div><div class='card'><div class='n'>2287</div><div class='l'>Transactions (ledger)</div></div><div class='card'><div class='n'>1,811,703</div><div class='l'>Real AMFI NAV observations</div></div><div class='card'><div class='n'>783</div><div class='l'>NAV schemes (coverage)</div></div></div><div class='grid'><section><h3>Transaction mix (external + internal)</h3><div class='panel'><div class='bar'><span class='lbl'>SIP_INSTALMENT</span><span class='track'><span class='fill' style='width:520px'></span></span><span class='val'>1712</span></div><div class='bar'><span class='lbl'>CONTRIBUTION</span><span class='track'><span class='fill' style='width:65px'></span></span><span class='val'>215</span></div><div class='bar'><span class='lbl'>PURCHASE</span><span class='track'><span class='fill' style='width:54px'></span></span><span class='val'>180</span></div><div class='bar'><span class='lbl'>SWITCH</span><span class='track'><span class='fill' style='width:27px'></span></span><span class='val'>90</span></div><div class='bar'><span class='lbl'>WITHDRAWAL</span><span class='track'><span class='fill' style='width:13px'></span></span><span class='val'>45</span></div><div class='bar'><span class='lbl'>REDEMPTION</span><span class='track'><span class='fill' style='width:13px'></span></span><span class='val'>45</span></div></div><p class='note'>Contributions/withdrawals are external flows; purchases/redemptions/switches are internal (PRD §6). SIP instalments carry contribution+purchase legs.</p></section><section><h3>Portfolio value, TWR, XIRR, allocations</h3><div class='panel'><p class='note'><strong>Honest state:</strong> total portfolio value, holdings allocation, and per-account TWR/XIRR series require <code>core.report_snapshot</code> rows (archived valuation/performance payloads). In the populated ledger run the snapshot count is <strong>0</strong>; therefore these measures are shown as <em>not yet materialised</em> rather than fabricated. Run the full snapshot/performance pipeline, then refresh Power BI to populate <code>marts.performance_summary</code> and <code>marts.holdings_snapshot</code>.</p><ul class='note'><li>Valuation rule: position = units × NAV + cash (Decimal/NUMERIC).</li><li>TWR: time-weighted, external flows only (GIPS-style conventions where documented).</li><li>XIRR: money-weighted, investor cash flows + terminal value.</li><li>Stale/missing NAV is reported separately; never silently forward-filled beyond policy.</li></ul></div></section></div><p class='footer'>Synthetic portfolio data; real AMFI NAV inputs. Educational prototype, not investment advice or a regulatory/compliance system. PostgreSQL-only marts (127.0.0.1:5434/bitemporal_ledger).</p></section>
+  <section id="p2" class="page"><h2>2. Account Drilldown</h2><div class='cards'><div class='card'><div class='n'>12</div><div class='l'>Accounts</div></div><div class='card'><div class='n'>2287</div><div class='l'>Ledger rows (current revisions)</div></div><div class='card'><div class='n'>6</div><div class='l'>Transaction types</div></div></div><div class='panel'><h3>Accounts (selector in Power BI)</h3><table><thead><tr><th>Account range</th><th>Status</th><th>Currency</th><th>Holdings / NAV / stale / cash / ledger / performance</th></tr></thead><tbody><tr><td>1..12</td><td>ACTIVE (synthetic)</td><td>INR</td><td>See marts.account_drilldown / marts.holdings_snapshot</td></tr></tbody></table><p class='note'>Each account drilldown in Power BI must filter holdings (units, NAV, market value, stale flag), cash, the transaction ledger (effective/recorded/type/status) and account-level performance by account and date. With 0 archived snapshots, point-in-time valuation/performance visuals remain unmaterialised until snapshots are generated — disclosed, not faked.</p></div><p class='footer'>Synthetic portfolio data; real AMFI NAV inputs. Educational prototype, not investment advice or a regulatory/compliance system. PostgreSQL-only marts (127.0.0.1:5434/bitemporal_ledger).</p></section>
+  <section id="p3" class="page"><h2>3. Restatements &amp; Audit</h2><div class='cards'><div class='card'><div class='n'>2287</div><div class='l'>Original revisions (business txns)</div></div><div class='card'><div class='n'>0</div><div class='l'>Applied correction operations</div></div><div class='card'><div class='n'>0</div><div class='l'>Rejected corrections</div></div><div class='card'><div class='n'>0</div><div class='l'>Archived report snapshots</div></div></div><div class='grid'><section><h3>Revision / correction state (honest)</h3><div class='panel'><div class='bar'><span class='lbl'>ORIGINAL</span><span class='track'><span class='fill' style='width:520px'></span></span><span class='val'>2287</span></div></div><div class='panel'><p class='note'><strong>Distinction (PRD):</strong> business transaction count = originals; accepted revisions = originals + applied correction revisions; applied correction operations = revisions with correction lineage (revision_no &gt; 1); rejected correction count = rows in <code>core.correction_rejection</code>. In the production dataset: <strong>0 applied corrections, 0 rejected</strong>. Correction intents exist in generated data/M3 tests; the full populated ledger holds only ORIGINAL revisions. <code>txn_group_id</code> count is <em>not</em> a correction-operation count.</p></div></section><section><h3>Restatement / replay / K1–K2</h3><div class='panel'><p class='note'>Original vs restated portfolio value/TWR/XIRR, K1/K2 comparisons, deltas, changed revisions, reasons and replay outcomes require archived snapshots and applied corrections. With <strong>0 snapshots</strong> and <strong>0 applied corrections</strong> in the current ledger, there are no restated reports to compare — reported as empty, not fabricated. M6 replay tests demonstrate exact replay and restatement attribution on the correction scenario (§2.2).</p></div></section></div><p class='footer'>Synthetic portfolio data; real AMFI NAV inputs. Educational prototype, not investment advice or a regulatory/compliance system. PostgreSQL-only marts (127.0.0.1:5434/bitemporal_ledger).</p></section>
+  <section id="p4" class="page"><h2>4. Sensitivity (real NAV paths, pre-registered)</h2><div class='cards'><div class='card'><div class='n'>344 / 30</div><div class='l'>Eligible / selected paths</div></div><div class='card'><div class='n'>40</div><div class='l'>Quarterly windows (2016Q1–2025Q4)</div></div><div class='card'><div class='n'>1,040</div><div class='l'>Eligible windows</div></div><div class='card'><div class='n'>11436</div><div class='l'>Detail rows (E8)</div></div></div><div class='grid'><section><h3>E8 — scenario detail rows</h3><table><thead><tr><th>Scenario</th><th>Rows</th></tr></thead><tbody><tr><td>mis_size_one_instalment</td><td>6240</td></tr><tr><td>backdate_one_instalment</td><td>4156</td></tr><tr><td>missed_correction</td><td>1040</td></tr></tbody></table><h3 style='margin-top:12px'>XIRR solver outcomes (detail)</h3><table><thead><tr><th>Status</th><th>Rows</th></tr></thead><tbody><tr><td>blank</td><td>11436</td></tr></tbody></table></section><section><h3>E9 — XIRR minus TWR vs drawdown</h3><div class='cards'><div class='card'><div class='n'>7194</div><div class='l'>Solved gaps (n)</div></div><div class='card'><div class='n'>7942.12 bp</div><div class='l'>Median (signed) gap</div></div><div class='card'><div class='n'>29373.91 bp</div><div class='l'>P95 gap</div></div><div class='card'><div class='n'>386</div><div class='l'>Excluded (no root in domain)</div></div></div><div class='panel'><p class='note'>Drawdown (absolute, n=11436): median 1305.65 bp, p95 3726.76 bp. Gaps reported only where XIRR solved (654/1,040); exclusions/multiple-root/non-convergence are disclosed, never averaged away. Correction magnitudes are controlled parameters, not observed error rates.</p><p class='note'>Frozen config SHA-256: <code>93fb380b293e22346df01cbf728a73a957cce8c4798103ffd8c789082ab8ab01</code></p></div></section></div><div class='panel'><h3>Coverage & qualification</h3><pre class='pre'># E9 Coverage — Sensitivity Study
+
+| Field | Value |
+|---|---|
+| Frozen config | `config/sensitivity.yaml` status `frozen`; SHA-256 `93fb380b293e22346df01cbf728a73a957cce8c4798103ffd8c789082ab8ab01` |
+| Eligible schemes | 344 (`min_observations &gt;= 750`, first NAV `&lt;= 2014-01-01`) |
+| Selected paths | 30 (`max_paths: 30`) |
+| Quarter windows | 40 (2016-01-01..2025-10-01 quarterly) |
+| Eligible windows (30 × 40) | 1,040 |
+| Successfully solved (XIRR gap present) | **654** |
+| Excluded (no XIRR root in reference domain) | **386** (37.1%) |
+| Detail rows | 11,436 (11 parameter values × ~1,040 windows; 5 backdate/mis-size rows fewer due to insufficient-path counting) |
+| Drawdown coverage | 1,040 / 1,040 (always present) |
+
+## Status breakdown (E9 rows)
+
+| Status | Count | Share |
+|---|---|---|
+| `SUCCESS` (gap solved) | 654 | 62.9% |
+| no root in reference domain (`r ∈ [−0.5, 5]`) | 386 | 37.1% |
+| multiple roots | 0 | 0% |
+| non-convergence | 0 | 0% |
+| excluded insufficient paths | 0 | 0% |
+
+The 386 excluded rows are not discarded silently: they remain in `results/sensitivity_detail.csv` with blank XIRR fields and are counted in the summary `failures` map (3,857 = 386 × 10 scenario parameters + 1 extra edge case).
+
+## Sample size used for the analysis
+
+- **n = 654** for the XIRR-minus-TWR versus drawdown analysis.
+- Drawdown alone has n = 1,040.
+
+## Qualification
+
+No E9 distribution is claimed on the full 1,040 windows. The reported E9 distribution uses only the 654 solved gaps. Fields not solved are reported as exclusions above, not averaged away.
+</pre></div><p class='footer'>Synthetic portfolio data; real AMFI NAV inputs. Educational prototype, not investment advice or a regulatory/compliance system. PostgreSQL-only marts (127.0.0.1:5434/bitemporal_ledger).</p></section>
+</main>
+<script>
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); document.getElementById(b.dataset.p).classList.add('active');
+}));
+</script></body></html>

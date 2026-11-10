@@ -1,0 +1,32 @@
+table MonthlyFlows
+	lineageTag: 20000000-0000-4000-8000-000000000004
+
+	measure 'Monthly Contributions' = SUM(MonthlyFlows[contributions])
+		formatString: #,0.00
+
+	measure 'Monthly Withdrawals' = SUM(MonthlyFlows[withdrawals])
+		formatString: #,0.00
+
+	column month
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: month
+
+	column contributions
+		dataType: decimal
+		summarizeBy: sum
+		sourceColumn: contributions
+
+	column withdrawals
+		dataType: decimal
+		summarizeBy: sum
+		sourceColumn: withdrawals
+
+	partition MonthlyFlows = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database("localhost:5434", "bitemporal_ledger"),
+					Data = Source{[Schema="marts", Item="monthly_flows"]}[Data]
+				in
+					Data

@@ -1,0 +1,186 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a2t1",
+  "position": {
+    "x": 10,
+    "y": 120,
+    "z": 1000,
+    "width": 700,
+    "height": 250,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HoldingsLatest"
+                    }
+                  },
+                  "Property": "account_id"
+                }
+              },
+              "queryRef": "HoldingsLatest.account_id",
+              "nativeQueryRef": "Account"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HoldingsLatest"
+                    }
+                  },
+                  "Property": "valuation_date"
+                }
+              },
+              "queryRef": "HoldingsLatest.valuation_date",
+              "nativeQueryRef": "Valuation Date (latest per account)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HoldingsLatest"
+                    }
+                  },
+                  "Property": "scheme_display"
+                }
+              },
+              "queryRef": "HoldingsLatest.scheme_display",
+              "nativeQueryRef": "Scheme"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HoldingsLatest"
+                    }
+                  },
+                  "Property": "units"
+                }
+              },
+              "queryRef": "HoldingsLatest.units",
+              "nativeQueryRef": "Units"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HoldingsLatest"
+                    }
+                  },
+                  "Property": "nav"
+                }
+              },
+              "queryRef": "HoldingsLatest.nav",
+              "nativeQueryRef": "NAV (INR)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HoldingsLatest"
+                    }
+                  },
+                  "Property": "market_value"
+                }
+              },
+              "queryRef": "HoldingsLatest.market_value",
+              "nativeQueryRef": "Market Value (INR)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HoldingsLatest"
+                    }
+                  },
+                  "Property": "stale_nav"
+                }
+              },
+              "queryRef": "HoldingsLatest.stale_nav",
+              "nativeQueryRef": "Stale NAV"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HoldingsLatest"
+                    }
+                  },
+                  "Property": "nav_date"
+                }
+              },
+              "queryRef": "HoldingsLatest.nav_date",
+              "nativeQueryRef": "NAV Date"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Holdings (Latest Snapshot per Account)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnTotals": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

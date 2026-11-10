@@ -1,0 +1,131 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a3t4",
+  "position": {
+    "x": 10,
+    "y": 290,
+    "z": 1000,
+    "width": 620,
+    "height": 120,
+    "tabOrder": 1500
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DemoCorrectionDetail"
+                    }
+                  },
+                  "Property": "affected_txn_id"
+                }
+              },
+              "queryRef": "DemoCorrectionDetail.affected_txn_id",
+              "nativeQueryRef": "Affected Transaction"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DemoCorrectionDetail"
+                    }
+                  },
+                  "Property": "correction_type"
+                }
+              },
+              "queryRef": "DemoCorrectionDetail.correction_type",
+              "nativeQueryRef": "Correction Type"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DemoCorrectionDetail"
+                    }
+                  },
+                  "Property": "correction_reason"
+                }
+              },
+              "queryRef": "DemoCorrectionDetail.correction_reason",
+              "nativeQueryRef": "Reason"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DemoCorrectionDetail"
+                    }
+                  },
+                  "Property": "replay_status"
+                }
+              },
+              "queryRef": "DemoCorrectionDetail.replay_status",
+              "nativeQueryRef": "Replay Status"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DemoCorrectionDetail"
+                    }
+                  },
+                  "Property": "new_revision"
+                }
+              },
+              "queryRef": "DemoCorrectionDetail.new_revision",
+              "nativeQueryRef": "New Revision"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Applied Correction & Replay Status'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

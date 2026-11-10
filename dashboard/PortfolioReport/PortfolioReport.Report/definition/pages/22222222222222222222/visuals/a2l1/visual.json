@@ -1,0 +1,102 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a2l1",
+  "position": {
+    "x": 720,
+    "y": 120,
+    "z": 2000,
+    "width": 550,
+    "height": 250,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "PortfolioHistory"
+                    }
+                  },
+                  "Property": "valuation_date"
+                }
+              },
+              "queryRef": "PortfolioHistory.valuation_date",
+              "nativeQueryRef": "valuation_date",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "PortfolioHistory"
+                        }
+                      },
+                      "Property": "total_value"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "PortfolioHistory.total_value",
+              "nativeQueryRef": "Total Value (INR)"
+            }
+          ]
+        },
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "PortfolioHistory"
+                    }
+                  },
+                  "Property": "account_id"
+                }
+              },
+              "queryRef": "PortfolioHistory.account_id",
+              "nativeQueryRef": "account_id"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Portfolio Value Over Time (Selected Account)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+relationship 'PortfolioOverview to AccountDrilldown'
+	fromColumn: AccountDrilldown.account_id
+	toColumn: PortfolioOverview.account_id
+
+relationship 'PortfolioOverview to PortfolioHistory'
+	fromColumn: PortfolioHistory.account_id
+	toColumn: PortfolioOverview.account_id
+
+relationship 'PortfolioOverview to HoldingsLatest'
+	fromColumn: HoldingsLatest.account_id
+	toColumn: PortfolioOverview.account_id
+
+relationship 'PortfolioOverview to CashFlows'
+	fromColumn: CashFlows.account_id
+	toColumn: PortfolioOverview.account_id
+
+relationship 'PortfolioOverview to ReportSnapshots'
+	fromColumn: ReportSnapshots.account_id
+	toColumn: PortfolioOverview.account_id

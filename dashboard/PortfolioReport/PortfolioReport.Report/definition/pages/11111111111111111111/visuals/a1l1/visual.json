@@ -1,0 +1,84 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a1l1",
+  "position": {
+    "x": 10,
+    "y": 115,
+    "z": 2000,
+    "width": 620,
+    "height": 250,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "PortfolioHistoryTotal"
+                    }
+                  },
+                  "Property": "valuation_date"
+                }
+              },
+              "queryRef": "PortfolioHistoryTotal.valuation_date",
+              "nativeQueryRef": "valuation_date",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "PortfolioHistoryTotal"
+                        }
+                      },
+                      "Property": "total_value"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "PortfolioHistoryTotal.total_value",
+              "nativeQueryRef": "Portfolio total value (INR, quarterly, M4 valuation)"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Portfolio Value Over Time'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

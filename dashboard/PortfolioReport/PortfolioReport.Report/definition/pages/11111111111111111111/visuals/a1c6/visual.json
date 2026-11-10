@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a1c6",
+  "position": {
+    "x": 1070,
+    "y": 10,
+    "z": 1000,
+    "width": 200,
+    "height": 95,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ReportSnapshots"
+                    }
+                  },
+                  "Property": "SnapshotCount"
+                }
+              },
+              "queryRef": "ReportSnapshots.SnapshotCount",
+              "nativeQueryRef": "Archived snapshots (0 perf series until more snapshots)"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Archived Snapshots'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

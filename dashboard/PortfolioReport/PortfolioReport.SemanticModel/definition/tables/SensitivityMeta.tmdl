@@ -1,0 +1,71 @@
+table SensitivityMeta
+	lineageTag: 10000000-1000-4000-8000-00000000000b
+
+	measure 'Selected Paths (30)' = MAX(SensitivityMeta[selected_paths])
+		formatString: 0
+
+	measure 'E9 Eligible Windows (1,040)' = MAX(SensitivityMeta[window_count])
+		formatString: 0
+
+	measure 'Solved Gaps (654)' = MAX(SensitivityMeta[solved_gaps])
+		formatString: 0
+
+	measure 'Excluded No-Root (386)' = MAX(SensitivityMeta[excluded_no_root])
+		formatString: 0
+
+	measure 'Detail Rows (11,436)' = MAX(SensitivityMeta[detail_rows])
+		formatString: 0
+
+	column eligible_paths
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: eligible_paths
+
+	column selected_paths
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: selected_paths
+
+	column window_count
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: window_count
+
+	column eligible_windows
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: eligible_windows
+
+	column detail_rows
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: detail_rows
+
+	column solved_gaps
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: solved_gaps
+
+	column excluded_no_root
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: excluded_no_root
+
+	column multiple_roots
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: multiple_roots
+
+	column non_convergence
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: non_convergence
+
+	partition SensitivityMeta = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database("localhost:5434", "bitemporal_ledger"),
+					sensitivity_meta = Source{[Schema="marts", Item="sensitivity_meta"]}[Data]
+				in
+					sensitivity_meta

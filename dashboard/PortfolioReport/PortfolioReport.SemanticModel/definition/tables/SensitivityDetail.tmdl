@@ -1,0 +1,53 @@
+table SensitivityDetail
+	lineageTag: 10000000-1000-4000-8000-00000000000a
+
+	measure 'Detail Rows (n)' = SUM(SensitivityDetail[n])
+		formatString: 0
+
+	measure 'Median |ΔXIRR| (bp), precomputed' = MAX(SensitivityDetail[median_abs_xirr_bp])
+		formatString: 0.00
+
+	measure 'P95 |ΔXIRR| (bp), precomputed' = MAX(SensitivityDetail[p95_abs_xirr_bp])
+		formatString: 0.00
+
+	measure 'Median |ΔTWR| (bp), precomputed' = MAX(SensitivityDetail[median_abs_twr_bp])
+		formatString: 0.0000
+
+	column scenario
+		dataType: string
+		summarizeBy: none
+		sourceColumn: scenario
+
+	column parameter_value
+		dataType: string
+		summarizeBy: none
+		sourceColumn: parameter_value
+
+	column n
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: n
+
+	column median_abs_xirr_bp
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: median_abs_xirr_bp
+
+	column median_abs_twr_bp
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: median_abs_twr_bp
+
+	column p95_abs_xirr_bp
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: p95_abs_xirr_bp
+
+	partition SensitivityDetail = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database("localhost:5434", "bitemporal_ledger"),
+					sensitivity_detail_agg = Source{[Schema="marts", Item="sensitivity_detail_agg"]}[Data]
+				in
+					sensitivity_detail_agg

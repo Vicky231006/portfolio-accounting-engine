@@ -1,0 +1,203 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a4t1",
+  "position": {
+    "x": 640,
+    "y": 400,
+    "z": 1000,
+    "height": 270,
+    "width": 630,
+    "tabOrder": 2001
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "band_label"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.band_label",
+              "nativeQueryRef": "Band"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "observations"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.observations",
+              "nativeQueryRef": "Observations"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "min_drawdown_bp"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.min_drawdown_bp",
+              "nativeQueryRef": "Min drawdown (bp)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "max_drawdown_bp"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.max_drawdown_bp",
+              "nativeQueryRef": "Max drawdown (bp)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "median_drawdown_bp"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.median_drawdown_bp",
+              "nativeQueryRef": "Median drawdown (bp)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "median_xirr_minus_twr_bp"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.median_xirr_minus_twr_bp",
+              "nativeQueryRef": "Median XIRR-TWR (bp)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "median_abs_xirr_minus_twr_bp"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.median_abs_xirr_minus_twr_bp",
+              "nativeQueryRef": "Median absolute difference (bp)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityE9Quintiles"
+                    }
+                  },
+                  "Property": "p95_abs_xirr_minus_twr_bp"
+                }
+              },
+              "queryRef": "SensitivityE9Quintiles.p95_abs_xirr_minus_twr_bp",
+              "nativeQueryRef": "P95 absolute difference (bp)"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "SensitivityE9Quintiles"
+                  }
+                },
+                "Property": "band_order"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnTotals": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'E9 Drawdown Quintile Summary (no grand total)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

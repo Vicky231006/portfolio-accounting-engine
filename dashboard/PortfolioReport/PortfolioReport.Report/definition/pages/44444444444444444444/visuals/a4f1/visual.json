@@ -1,0 +1,31 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a4f1",
+  "position": {
+    "x": 10,
+    "y": 678,
+    "z": 3000,
+    "width": 1260,
+    "height": 20,
+    "tabOrder": 9000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": {
+              "expr": {
+                "Literal": {
+                  "Value": "[{\"textRuns\":[{\"value\":\"Synthetic accounts/transactions for demonstration; real AMFI NAV inputs. Educational prototype, not investment advice.\",\"textStyle\":{\"fontSize\":\"8pt\"}}]}]"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

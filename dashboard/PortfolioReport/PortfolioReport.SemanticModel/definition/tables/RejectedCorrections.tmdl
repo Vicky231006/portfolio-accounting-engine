@@ -1,0 +1,38 @@
+table RejectedCorrections
+	lineageTag: 10000000-1000-4000-8000-000000000008
+
+	measure RejectedCount = COUNTROWS(RejectedCorrections)
+
+	column txn_group_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: txn_group_id
+
+	column correction_type
+		dataType: string
+		summarizeBy: none
+		sourceColumn: correction_type
+
+	column reason_code
+		dataType: string
+		summarizeBy: none
+		sourceColumn: reason_code
+
+	column actor_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: actor_id
+
+	column attempted_recorded_at
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: attempted_recorded_at
+
+	partition RejectedCorrections = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database("localhost:5434", "bitemporal_ledger"),
+					rejected_corrections = Source{[Schema="marts", Item="rejected_corrections"]}[Data]
+				in
+					rejected_corrections

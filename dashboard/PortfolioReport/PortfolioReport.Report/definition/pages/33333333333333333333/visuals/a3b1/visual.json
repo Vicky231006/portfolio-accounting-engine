@@ -1,0 +1,84 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "a3b1",
+  "position": {
+    "x": 640,
+    "y": 290,
+    "z": 1000,
+    "width": 630,
+    "height": 250,
+    "tabOrder": 1700
+  },
+  "visual": {
+    "visualType": "barChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementAudit"
+                    }
+                  },
+                  "Property": "revision_kind"
+                }
+              },
+              "queryRef": "RestatementAudit.revision_kind",
+              "nativeQueryRef": "revision_kind",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "RestatementAudit"
+                        }
+                      },
+                      "Property": "txn_group_id"
+                    }
+                  },
+                  "Function": 5
+                }
+              },
+              "queryRef": "Count(RestatementAudit.txn_group_id)",
+              "nativeQueryRef": "Revision Count"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Revision Count by Kind (actual records)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

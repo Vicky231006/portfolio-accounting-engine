@@ -1,0 +1,145 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a3t2",
+  "position": {
+    "x": 10,
+    "y": 550,
+    "z": 1000,
+    "width": 1260,
+    "height": 120,
+    "tabOrder": 1700
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementAudit"
+                    }
+                  },
+                  "Property": "txn_group_id"
+                }
+              },
+              "queryRef": "RestatementAudit.txn_group_id",
+              "nativeQueryRef": "Transaction"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementAudit"
+                    }
+                  },
+                  "Property": "revision_no"
+                }
+              },
+              "queryRef": "RestatementAudit.revision_no",
+              "nativeQueryRef": "Revision No."
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementAudit"
+                    }
+                  },
+                  "Property": "revision_kind"
+                }
+              },
+              "queryRef": "RestatementAudit.revision_kind",
+              "nativeQueryRef": "Revision Kind"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementAudit"
+                    }
+                  },
+                  "Property": "revision_status"
+                }
+              },
+              "queryRef": "RestatementAudit.revision_status",
+              "nativeQueryRef": "Revision Status"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementAudit"
+                    }
+                  },
+                  "Property": "reason_code"
+                }
+              },
+              "queryRef": "RestatementAudit.reason_code",
+              "nativeQueryRef": "Reason Code"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementAudit"
+                    }
+                  },
+                  "Property": "effective_date"
+                }
+              },
+              "queryRef": "RestatementAudit.effective_date",
+              "nativeQueryRef": "Effective Date"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Transaction Revision / Correction Audit Detail'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,43 @@
+table HoldingsSnapshot
+	lineageTag: 10000000-1000-4000-8000-000000000007
+
+	measure HoldingsValue = SUM(HoldingsSnapshot[value])
+
+	column account_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: account_id
+
+	column scheme_code
+		dataType: string
+		summarizeBy: none
+		sourceColumn: scheme_code
+
+	column units
+		dataType: decimal
+		summarizeBy: sum
+		sourceColumn: units
+
+	column value
+		dataType: decimal
+		summarizeBy: sum
+		sourceColumn: value
+
+	column is_stale
+		dataType: string
+		summarizeBy: none
+		sourceColumn: is_stale
+
+	column nav_date
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: nav_date
+
+	partition HoldingsSnapshot = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database("localhost:5434", "bitemporal_ledger"),
+					holdings_snapshot = Source{[Schema="marts", Item="holdings_snapshot"]}[Data]
+				in
+					holdings_snapshot

@@ -1,0 +1,54 @@
+table Sensitivity
+	lineageTag: 10000000-1000-4000-8000-000000000004
+
+	measure 'E9 Window Count' = COUNTROWS(Sensitivity)
+		formatString: 0
+
+	measure 'Solved Gaps (n=654)' = CALCULATE(COUNTROWS(Sensitivity), Sensitivity[solved] = TRUE())
+		formatString: 0
+
+	measure 'Excluded / Unsolved Windows' = CALCULATE(COUNTROWS(Sensitivity), Sensitivity[solved] = FALSE())
+		formatString: 0
+
+	measure 'Drawdown (bp)' = SELECTEDVALUE(Sensitivity[drawdown_bp])
+
+	measure 'XIRR minus TWR (bp)' = SELECTEDVALUE(Sensitivity[xirr_minus_twr_bp])
+
+	column observation_key
+		dataType: string
+		summarizeBy: none
+		sourceColumn: observation_key
+
+	column scheme
+		dataType: string
+		summarizeBy: none
+		sourceColumn: scheme
+
+	column window_start
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: window_start
+
+	column drawdown_bp
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: drawdown_bp
+
+	column xirr_minus_twr_bp
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: xirr_minus_twr_bp
+
+	column solved
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: solved
+
+	partition Sensitivity = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database("localhost:5434", "bitemporal_ledger"),
+					sensitivity_e9 = Source{[Schema="marts", Item="sensitivity_e9"]}[Data]
+				in
+					sensitivity_e9

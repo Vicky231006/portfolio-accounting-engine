@@ -1,0 +1,144 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a1t1",
+  "position": {
+    "x": 640,
+    "y": 375,
+    "z": 1000,
+    "width": 630,
+    "height": 295,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ReportSnapshots"
+                    }
+                  },
+                  "Property": "account_id"
+                }
+              },
+              "queryRef": "ReportSnapshots.account_id",
+              "nativeQueryRef": "Account"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ReportSnapshots"
+                    }
+                  },
+                  "Property": "known_as_of"
+                }
+              },
+              "queryRef": "ReportSnapshots.known_as_of",
+              "nativeQueryRef": "Known As Of (K)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ReportSnapshots"
+                    }
+                  },
+                  "Property": "twr"
+                }
+              },
+              "queryRef": "ReportSnapshots.twr",
+              "nativeQueryRef": "TWR (%)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ReportSnapshots"
+                    }
+                  },
+                  "Property": "xirr_rate"
+                }
+              },
+              "queryRef": "ReportSnapshots.xirr_rate",
+              "nativeQueryRef": "XIRR (%)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ReportSnapshots"
+                    }
+                  },
+                  "Property": "total_value"
+                }
+              },
+              "queryRef": "ReportSnapshots.total_value",
+              "nativeQueryRef": "Total Value (INR)"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Archived Report Summary (TWR/XIRR %)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnTotals": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

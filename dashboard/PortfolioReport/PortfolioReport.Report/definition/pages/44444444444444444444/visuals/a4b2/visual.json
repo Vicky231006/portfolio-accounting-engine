@@ -1,0 +1,158 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a4b2",
+  "position": {
+    "x": 620,
+    "y": 130,
+    "z": 1000,
+    "width": 650,
+    "height": 260,
+    "tabOrder": 1006
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityDetail"
+                    }
+                  },
+                  "Property": "scenario"
+                }
+              },
+              "queryRef": "SensitivityDetail.scenario",
+              "nativeQueryRef": "Scenario"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityDetail"
+                    }
+                  },
+                  "Property": "parameter_value"
+                }
+              },
+              "queryRef": "SensitivityDetail.parameter_value",
+              "nativeQueryRef": "Parameter"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityDetail"
+                    }
+                  },
+                  "Property": "n"
+                }
+              },
+              "queryRef": "SensitivityDetail.n",
+              "nativeQueryRef": "n (detail observations)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityDetail"
+                    }
+                  },
+                  "Property": "Median |ΔXIRR| (bp), precomputed"
+                }
+              },
+              "queryRef": "SensitivityDetail.Median |ΔXIRR| (bp), precomputed",
+              "nativeQueryRef": "Median |ΔXIRR| (bp), precomputed"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityDetail"
+                    }
+                  },
+                  "Property": "P95 |ΔXIRR| (bp), precomputed"
+                }
+              },
+              "queryRef": "SensitivityDetail.P95 |ΔXIRR| (bp), precomputed",
+              "nativeQueryRef": "P95 |ΔXIRR| (bp), precomputed"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SensitivityDetail"
+                    }
+                  },
+                  "Property": "Median |ΔTWR| (bp), precomputed"
+                }
+              },
+              "queryRef": "SensitivityDetail.Median |ΔTWR| (bp), precomputed",
+              "nativeQueryRef": "Median |ΔTWR| (bp), precomputed"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnTotals": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Scenario Median/P95 Impact (precomputed, no grand total)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

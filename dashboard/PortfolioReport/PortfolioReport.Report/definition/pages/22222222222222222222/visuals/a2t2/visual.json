@@ -1,0 +1,186 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a2t2",
+  "position": {
+    "x": 10,
+    "y": 380,
+    "z": 1000,
+    "width": 1260,
+    "height": 290,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AccountDrilldown"
+                    }
+                  },
+                  "Property": "txn_group_id"
+                }
+              },
+              "queryRef": "AccountDrilldown.txn_group_id",
+              "nativeQueryRef": "Transaction"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AccountDrilldown"
+                    }
+                  },
+                  "Property": "txn_type"
+                }
+              },
+              "queryRef": "AccountDrilldown.txn_type",
+              "nativeQueryRef": "Type"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AccountDrilldown"
+                    }
+                  },
+                  "Property": "effective_date"
+                }
+              },
+              "queryRef": "AccountDrilldown.effective_date",
+              "nativeQueryRef": "Effective date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AccountDrilldown"
+                    }
+                  },
+                  "Property": "recorded_at"
+                }
+              },
+              "queryRef": "AccountDrilldown.recorded_at",
+              "nativeQueryRef": "Recorded date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AccountDrilldown"
+                    }
+                  },
+                  "Property": "scheme_code"
+                }
+              },
+              "queryRef": "AccountDrilldown.scheme_code",
+              "nativeQueryRef": "Scheme"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AccountDrilldown"
+                    }
+                  },
+                  "Property": "amount_instructed"
+                }
+              },
+              "queryRef": "AccountDrilldown.amount_instructed",
+              "nativeQueryRef": "Amount Instructed (INR)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AccountDrilldown"
+                    }
+                  },
+                  "Property": "units_instructed"
+                }
+              },
+              "queryRef": "AccountDrilldown.units_instructed",
+              "nativeQueryRef": "Units Instructed"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "AccountDrilldown"
+                    }
+                  },
+                  "Property": "is_voided"
+                }
+              },
+              "queryRef": "AccountDrilldown.is_voided",
+              "nativeQueryRef": "Voided/Status"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Transaction Ledger (Selected Account)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnTotals": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

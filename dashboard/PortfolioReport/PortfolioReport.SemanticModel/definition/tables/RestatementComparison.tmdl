@@ -1,0 +1,113 @@
+table RestatementComparison
+	lineageTag: 20000000-0000-4000-8000-000000000006
+
+	measure 'Delta Total Value (INR)' = SUM(RestatementComparison[delta_total_value])
+		formatString: "₹"+#,0.00;"₹"-#,0.00;"₹"0.00
+
+	measure 'Delta Cash (INR)' = SUM(RestatementComparison[delta_cash])
+		formatString: "₹"+#,0.00;"₹"-#,0.00;"₹"0.00
+
+	measure 'Delta TWR (bp)' = SUM(RestatementComparison[delta_twr_bp])
+		formatString: +0.00" bp";-0.00" bp";0.00" bp"
+
+	measure 'Delta TWR (pp)' = SUM(RestatementComparison[delta_twr_pp])
+		formatString: +0.0000000" pp";-0.0000000" pp";0.0000000" pp"
+
+	column account_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: account_id
+
+	column period_start
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: period_start
+
+	column period_end
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: period_end
+
+	column k1
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: k1
+
+	column k2
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: k2
+
+	column original_total_value
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: original_total_value
+		formatString: "₹"#,0.00
+
+	column restated_total_value
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: restated_total_value
+		formatString: "₹"#,0.00
+
+	column delta_total_value
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: delta_total_value
+		formatString: "₹"+#,0.00;"₹"-#,0.00;"₹"0.00
+
+	column original_cash
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: original_cash
+		formatString: "₹"#,0.00
+
+	column restated_cash
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: restated_cash
+		formatString: "₹"#,0.00
+
+	column delta_cash
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: delta_cash
+		formatString: "₹"+#,0.00;"₹"-#,0.00;"₹"0.00
+
+	column original_twr
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: original_twr
+		formatString: 0.000000%;-0.000000%;0.000000%
+
+	column restated_twr
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: restated_twr
+		formatString: 0.000000%;-0.000000%;0.000000%
+
+	column delta_twr
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: delta_twr
+
+	column delta_twr_bp
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: delta_twr_bp
+		formatString: +0.00" bp";-0.00" bp";0.00" bp"
+
+	column delta_twr_pp
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: delta_twr_pp
+		formatString: +0.0000000" pp";-0.0000000" pp";0.0000000" pp"
+
+	partition RestatementComparison = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database("localhost:5434", "bitemporal_ledger"),
+					Data = Source{[Schema="marts", Item="restatement_comparison"]}[Data]
+				in
+					Data

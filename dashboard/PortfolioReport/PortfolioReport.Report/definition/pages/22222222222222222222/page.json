@@ -1,0 +1,64 @@
+{
+
+
+
+
+
+
+
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+
+
+
+
+
+
+
+  "name": "22222222222222222222",
+
+
+
+
+
+
+
+  "displayName": "2 Account Drilldown",
+
+
+
+
+
+
+
+  "displayOption": "FitToPage",
+
+
+
+
+
+
+
+  "width": 1280,
+
+
+
+
+
+
+
+  "height": 720
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+

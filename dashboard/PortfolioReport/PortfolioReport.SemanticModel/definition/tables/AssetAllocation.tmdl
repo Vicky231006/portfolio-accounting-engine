@@ -1,0 +1,41 @@
+table AssetAllocation
+	lineageTag: 20000000-0000-4000-8000-000000000005
+
+	measure 'Allocation Market Value' = SUM(AssetAllocation[market_value])
+		formatString: "₹"#,0.00
+
+	column scheme_display
+		dataType: string
+		summarizeBy: none
+		sourceColumn: scheme_display
+		sortByColumn: sort_order
+
+	column scheme_code
+		dataType: string
+		summarizeBy: none
+		sourceColumn: scheme_code
+
+	column market_value
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: market_value
+		formatString: "₹"#,0.00
+
+	column total_units
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: total_units
+
+	column sort_order
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: sort_order
+
+	partition AssetAllocation = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database("localhost:5434", "bitemporal_ledger"),
+					Data = Source{[Schema="marts", Item="asset_allocation"]}[Data]
+				in
+					Data

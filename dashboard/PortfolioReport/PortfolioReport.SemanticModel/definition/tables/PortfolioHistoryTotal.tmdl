@@ -1,0 +1,45 @@
+table PortfolioHistoryTotal
+	lineageTag: 20000000-0000-4000-8000-000000000002
+
+	measure 'Latest Valuation Date' = MAX(PortfolioHistoryTotal[valuation_date])
+
+	measure 'Portfolio Total Value' = CALCULATE(SUM(PortfolioHistoryTotal[total_value]), PortfolioHistoryTotal[valuation_date] = MAX(PortfolioHistoryTotal[valuation_date]))
+		formatString: "₹"#,0.00
+
+	measure 'Portfolio Total Cash' = CALCULATE(SUM(PortfolioHistoryTotal[total_cash]), PortfolioHistoryTotal[valuation_date] = MAX(PortfolioHistoryTotal[valuation_date]))
+		formatString: "₹"#,0.00
+
+	measure 'Portfolio Total Holdings Value' = CALCULATE(SUM(PortfolioHistoryTotal[total_holdings_value]), PortfolioHistoryTotal[valuation_date] = MAX(PortfolioHistoryTotal[valuation_date]))
+		formatString: "₹"#,0.00
+
+	column valuation_date
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: valuation_date
+
+	column total_value
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: total_value
+		formatString: "₹"#,0.00
+
+	column total_cash
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: total_cash
+		formatString: "₹"#,0.00
+
+	column total_holdings_value
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: total_holdings_value
+		formatString: "₹"#,0.00
+
+	partition PortfolioHistoryTotal = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database("localhost:5434", "bitemporal_ledger"),
+					Data = Source{[Schema="marts", Item="portfolio_history_total"]}[Data]
+				in
+					Data

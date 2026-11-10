@@ -1,0 +1,66 @@
+table HoldingsLatest
+	lineageTag: 20000000-0000-4000-8000-000000000003
+
+	measure 'Holdings Market Value' = SUM(HoldingsLatest[market_value])
+		formatString: "₹"#,0.00
+
+	column account_id
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: account_id
+
+	column valuation_date
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: valuation_date
+
+	column scheme_code
+		dataType: string
+		summarizeBy: none
+		sourceColumn: scheme_code
+
+	column scheme_display
+		dataType: string
+		summarizeBy: none
+		sourceColumn: scheme_display
+
+	column units
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: units
+
+	column nav
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: nav
+		formatString: "₹"#,0.0000
+
+	column nav_date
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: nav_date
+
+	column market_value
+		dataType: decimal
+		summarizeBy: none
+		sourceColumn: market_value
+		formatString: "₹"#,0.00
+
+	column stale_nav
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: stale_nav
+
+	column stale_days
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: stale_days
+
+	partition HoldingsLatest = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database("localhost:5434", "bitemporal_ledger"),
+					Data = Source{[Schema="marts", Item="holdings_latest"]}[Data]
+				in
+					Data

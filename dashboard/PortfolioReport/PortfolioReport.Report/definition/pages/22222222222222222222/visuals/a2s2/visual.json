@@ -1,0 +1,61 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a2s2",
+  "position": {
+    "x": 280,
+    "y": 10,
+    "z": 500,
+    "width": 320,
+    "height": 100,
+    "tabOrder": 500
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "PortfolioHistory"
+                    }
+                  },
+                  "Property": "valuation_date"
+                }
+              },
+              "queryRef": "PortfolioHistory.valuation_date",
+              "nativeQueryRef": "Valuation date / period",
+              "active": true
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Valuation Date Filter'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

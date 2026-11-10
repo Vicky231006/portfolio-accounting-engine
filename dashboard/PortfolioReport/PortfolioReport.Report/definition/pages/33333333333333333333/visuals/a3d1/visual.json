@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "a3d1",
+  "position": {
+    "x": 850,
+    "y": 10,
+    "z": 1000,
+    "width": 150,
+    "height": 90,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RestatementComparison"
+                    }
+                  },
+                  "Property": "Delta Total Value (INR)"
+                }
+              },
+              "queryRef": "RestatementComparison.Delta Total Value (INR)",
+              "nativeQueryRef": "Δ Portfolio Value (INR)"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Δ Portfolio Value'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
