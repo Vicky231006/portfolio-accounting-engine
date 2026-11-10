@@ -28,7 +28,7 @@ M1 Foundations (approved), M2 Generator (approved), M3 Ledger & Corrections (app
 
 ## Verification status (2026-11-10)
 
-- **Verified now (DB/files):** Docker PG16 container healthy; NAV snapshot `amfi_nav_m1` (id 3) 1,811,709 observations, 0 duplicate keys; 7 migrations applied with checksums matching `sql/migrations/*.sql`; E9 quintile marts 654/654 distinct, per-band stats independently validated; M8 config hash preserved; git/secret scan and doc/traceability audits completed (see `docs/V1_0_0_RC_FINAL_REPORT.md`).
+- **Verified now (DB/files):** Docker PG16 container healthy; canonical NAV snapshot `amfi_nav_m1` (id 3) **1,811,703** observations (approved 85 ranges), 0 duplicate keys, with 6 seed/test fixture NAV rows isolated in separate snapshot `test_fixture_nav_seeds` (id 4); 7 migrations applied with checksums matching `sql/migrations/*.sql`; E9 quintile marts 654/654 distinct, per-band stats independently validated; M8 config hash preserved; git/secret scan and doc/traceability audits completed (see `docs/V1_0_0_RC_FINAL_REPORT.md`, `docs/NAV_RECONCILIATION_6_EXTRA.md`).
 - **Prior local evidence (recorded, not re-executed this session):** migrations, double `make reproduce` (hash `ac6257e2…`), **75 tests passed**, `ruff` clean, 10 ad-hoc queries, checksum-tamper exercised, ingestion idempotent (Docker PG16 + CPython 3.12).
 - **Not executed in this environment:** full pytest/Ruff, checksum-tamper test rerun, NAV idempotency rerun from source, **two clean `make reproduce` runs with matching logical hashes** (requires prepared env), Power BI Desktop validation, remote CI.
 

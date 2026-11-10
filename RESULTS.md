@@ -5,7 +5,7 @@
 | Project | `bitemporal-ledger` — Portfolio Accounting & Performance Engine |
 | Date | 2026-11-09 (baseline generation) / 2026-11-10 (M10 verification notes) |
 | Data | Synthetic accounts/transactions/corrections; real AMFI NAV inputs. Educational prototype; not investment advice. |
-| NAV snapshot | `amfi_nav_m1` (core.nav_snapshot id 3); 1,811,709 observations (2006-04-02–2026-11-06), 0 duplicate `(snapshot, scheme, date)` keys — **verified 2026-11-10** |
+| NAV snapshot | **Canonical** `amfi_nav_m1` (core.nav_snapshot id 3): **1,811,703** observations (2006-04-02–2026-11-06, approved 85 ranges), 0 duplicate `(snapshot, scheme, date)` keys. 6 seed/test fixture rows isolated in `core.nav_snapshot` id 4 `test_fixture_nav_seeds` (DB total 1,811,709) — **verified/reconciled 2026-11-10** (`docs/NAV_RECONCILIATION_6_EXTRA.md`) |
 | Generator | `generator-1.0.0`; seed 20261109; config hash `c0e8e515677698c4e9dbc2720089ad7ce39091447f482bce9f97d195b32ae81a` |
 | Dataset hash | `94839c5cb0119c6501f592da2f7fef56ca3f6cbb04e5e49ba4adfaf3308b6cda` (baseline) |
 
@@ -53,7 +53,7 @@
 
 ## M10 verification notes (2026-11-10)
 
-- **Verified (DB/files):** NAV snapshot 3 / 1,811,709 obs, 0 duplicates; 7 migrations applied with checksums matching `sql/migrations/*.sql`; migration runner fails on checksum mismatch (code-level). E9 marts 654 distinct/once, per-band validation OK. M8 config hash preserved. Git working tree and secret scan performed (no commits/remote; no secrets found in repo scan; local dev DSNs present). Docs audited/updated. Dashboard frozen; screenshots present (Desktop finality manual).
+- **Verified (DB/files):** canonical NAV snapshot 3 / 1,811,703 obs (approved 85 ranges, 6 fixture rows isolated in snapshot 4), 0 duplicates; 7 migrations applied with checksums matching `sql/migrations/*.sql`; migration runner fails on checksum mismatch (code-level). E9 marts 654 distinct/once, per-band validation OK. M8 config hash preserved. Git/secret scan and audits completed (local dev DB config hardened to 127.0.0.1 + `.env` password; `.env` not committed). Dashboard frozen; screenshots present (Desktop finality manual).
 - **Not executed:** full pytest suite, Ruff, checksum-tamper regression test rerun, NAV idempotency rerun from source, two clean `make reproduce` runs with matching logical hashes, Power BI Desktop validation, remote CI. Prior local claims (75 tests, Ruff clean, double reproduce `ac6257e2…`, tamper exercised) are **recorded but not re-run** this session.
 - See `docs/V1_0_0_RC_FINAL_REPORT.md`.
 
