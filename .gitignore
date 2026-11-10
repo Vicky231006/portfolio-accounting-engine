@@ -18,6 +18,7 @@ build/
 !.env.example
 *.pem
 *.key
+prompt.md
 
 # Raw NAV / data inputs (AMFI/FundLens; do not commit raw source files)
 data/
