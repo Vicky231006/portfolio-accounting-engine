@@ -14,7 +14,7 @@ import html
 import json
 import pathlib
 from collections import Counter
-from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / "dashboard" / "index.html"
@@ -26,27 +26,55 @@ FOOTER = (
     "(127.0.0.1:5434/bitemporal_ledger)."
 )
 
-# Last verified pipeline counts (reproduce.py, dataset 94839c5c..., nav_snapshot 3).
-# These come from the deterministic seeded run; Power BI refresh against a
-# populated DB will show the same ledger facts.
-LEDGER = {
-    "accounts": 12,
-    "transactions": 2287,
-    "original_revisions": 2287,
+# Fallback counts only. The rendered dashboard reads results/pipeline_summary.json,
+# written by scripts/reproduce.py from the verified pipeline run.
+LEDGER_FALLBACK = {
+    "accounts": 0,
+    "transactions": 0,
+    "original_revisions": 0,
     "applied_corrections": 0,
     "rejected_corrections": 0,
     "archived_snapshots": 0,
-    "nav_observations": 1811703,
-    "nav_schemes": 783,
-    "txn_types": [
-        ("SIP_INSTALMENT", 1712),
-        ("CONTRIBUTION", 215),
-        ("PURCHASE", 180),
-        ("SWITCH", 90),
-        ("WITHDRAWAL", 45),
-        ("REDEMPTION", 45),
-    ],
+    "nav_observations": 0,
+    "nav_schemes": 0,
+    "txn_types": [],
 }
+
+
+def load_pipeline() -> dict:
+    path = ROOT / "results" / "pipeline_summary.json"
+    ledger = dict(LEDGER_FALLBACK)
+    if not path.exists():
+        return ledger
+    data = json.loads(path.read_text(encoding="utf-8"))
+    counts = data.get("generator", {}).get("counts", {})
+    demo = data.get("demo", {})
+    nav = data.get("nav", {})
+    transactions = int(counts.get("transactions") or 0)
+    ledger.update(
+        {
+            "accounts": int(counts.get("accounts") or 0),
+            "transactions": transactions,
+            "original_revisions": transactions,
+            "applied_corrections": int(demo.get("applied_corrections") or 0),
+            "rejected_corrections": int(demo.get("rejected_corrections") or 0),
+            "archived_snapshots": int(demo.get("archived_report_snapshots") or 0),
+            "nav_observations": int(nav.get("observations") or 0),
+            "nav_schemes": int(nav.get("schemes") or 0),
+            "config_sha256": data.get("generator", {}).get("config_sha256"),
+            "dataset_sha256": data.get("generator", {}).get("dataset_sha256"),
+            "seed": data.get("generator", {}).get("seed"),
+            "txn_types": sorted(
+                (
+                    (name, int(count))
+                    for name, count in (data.get("generator", {}).get("transactions_by_type") or {}).items()
+                ),
+                key=lambda item: item[1],
+                reverse=True,
+            ),
+        }
+    )
+    return ledger
 
 
 def esc(v: object) -> str:
@@ -73,6 +101,7 @@ def load_sensitivity() -> dict:
         "statuses": Counter(),
         "gaps": [],
         "drawdowns": [],
+        "e9_pairs": [],
         "sample": {},
         "coverage_text": coverage.read_text(encoding="utf-8") if coverage.exists() else "",
     }
@@ -92,13 +121,17 @@ def load_sensitivity() -> dict:
                 dd = row.get("drawdown_bp") or ""
                 if dd:
                     try:
-                        out["drawdowns"].append(Decimal(dd))
+                        dd_value = Decimal(dd)
+                        out["drawdowns"].append(dd_value)
+                        if gap:
+                            out["e9_pairs"].append((dd_value, Decimal(gap)))
                     except InvalidOperation:
                         pass
     if summary.exists():
         data = json.loads(summary.read_text(encoding="utf-8"))
         out["config_sha256"] = data.get("config_sha256")
         out["sample"] = data.get("sample") or {}
+        out["coverage"] = data.get("e9_coverage") or {}
     return out
 
 
@@ -106,8 +139,8 @@ def stat_cards(items: list[tuple[str, str]]) -> str:
     return (
         "<div class='cards'>"
         + "".join(
-            f"<div class='card'><div class='n'>{esc(n)}</div><div class='l'>{esc(l)}</div></div>"
-            for n, l in items
+            f"<div class='card'><div class='n'>{esc(value)}</div><div class='l'>{esc(label)}</div></div>"
+            for value, label in items
         )
         + "</div>"
     )
@@ -155,25 +188,27 @@ def quantiles(vals: list[Decimal]) -> dict[str, str]:
 
 
 def render() -> str:
+    ledger = load_pipeline()
     sens = load_sensitivity()
+    coverage = sens.get("coverage") or {}
     gap_stats = quantiles(sens["gaps"])
     dd_stats = quantiles([abs(x) for x in sens["drawdowns"]])
 
     page1 = (
         "<h2>1. Portfolio Overview</h2>"
         + stat_cards([
-            (str(LEDGER["accounts"]), "Synthetic accounts"),
-            (str(LEDGER["transactions"]), "Transactions (ledger)"),
-            (f"{LEDGER['nav_observations']:,}", "Real AMFI NAV observations"),
-            (str(LEDGER["nav_schemes"]), "NAV schemes (coverage)"),
+            (str(ledger["accounts"]), "Synthetic accounts"),
+            (str(ledger["transactions"]), "Transactions (ledger)"),
+            (f"{ledger['nav_observations']:,}", "Real AMFI NAV observations"),
+            (str(ledger["nav_schemes"]), "NAV schemes (coverage)"),
         ])
         + "<div class='grid'>"
         + "<section><h3>Transaction mix (external + internal)</h3>"
-        + bars(LEDGER["txn_types"])
+        + bars(ledger["txn_types"])
         + "<p class='note'>Contributions/withdrawals are external flows; purchases/redemptions/switches are internal (PRD §6). SIP instalments carry contribution+purchase legs.</p></section>"
         + "<section><h3>Portfolio value, TWR, XIRR, allocations</h3>"
-        + "<div class='panel'><p class='note'><strong>Honest state:</strong> total portfolio value, holdings allocation, and per-account TWR/XIRR series require <code>core.report_snapshot</code> rows (archived valuation/performance payloads). In the populated ledger run the snapshot count is <strong>"
-        + str(LEDGER["archived_snapshots"]) + "</strong>; therefore these measures are shown as <em>not yet materialised</em> rather than fabricated. Run the full snapshot/performance pipeline, then refresh Power BI to populate <code>marts.performance_summary</code> and <code>marts.holdings_snapshot</code>.</p>"
+        + "<div class='panel'><p class='note'><strong>Honest state:</strong> total portfolio value, holdings allocation, and per-account TWR/XIRR series require <code>core.report_snapshot</code> rows (archived valuation/performance payloads). This deterministic demonstration pipeline archives <strong>"
+        + str(ledger["archived_snapshots"]) + "</strong> report snapshot(s); the full per-account performance series is populated by a broader snapshot run. Values are never fabricated; run the snapshot/performance pipeline, then refresh Power BI to populate <code>marts.performance_summary</code> and <code>marts.holdings_snapshot</code>.</p>"
         + "<ul class='note'><li>Valuation rule: position = units × NAV + cash (Decimal/NUMERIC).</li>"
         + "<li>TWR: time-weighted, external flows only (GIPS-style conventions where documented).</li>"
         + "<li>XIRR: money-weighted, investor cash flows + terminal value.</li>"
@@ -183,47 +218,75 @@ def render() -> str:
     )
 
     page2_rows = [
-        ["1..12", "ACTIVE (synthetic)", "INR", "See marts.account_drilldown / marts.holdings_snapshot"],
+        [f"1..{ledger['accounts']}", "ACTIVE (synthetic)", "INR", "See marts.account_drilldown / marts.holdings_snapshot"],
     ]
     page2 = (
         "<h2>2. Account Drilldown</h2>"
         + stat_cards([
-            (str(LEDGER["accounts"]), "Accounts"),
-            (str(LEDGER["transactions"]), "Ledger rows (current revisions)"),
+            (str(ledger["accounts"]), "Accounts"),
+            (str(ledger["transactions"]), "Ledger rows (current revisions)"),
             ("6", "Transaction types"),
         ])
         + "<div class='panel'><h3>Accounts (selector in Power BI)</h3>"
         + table(["Account range", "Status", "Currency", "Holdings / NAV / stale / cash / ledger / performance"], page2_rows)
-        + "<p class='note'>Each account drilldown in Power BI must filter holdings (units, NAV, market value, stale flag), cash, the transaction ledger (effective/recorded/type/status) and account-level performance by account and date. With 0 archived snapshots, point-in-time valuation/performance visuals remain unmaterialised until snapshots are generated — disclosed, not faked.</p></div>"
+        + "<p class='note'>Each account drilldown in Power BI must filter holdings (units, NAV, market value, stale flag), cash, the transaction ledger (effective/recorded/type/status) and account-level performance by account and date. The demonstration pipeline archives the K1/K2 report snapshots used on Page 3; a full per-account performance series is materialised by a broader snapshot run and is disclosed rather than fabricated.</p></div>"
         + "<p class='footer'>" + esc(FOOTER) + "</p>"
     )
 
     page3 = (
         "<h2>3. Restatements &amp; Audit</h2>"
         + stat_cards([
-            (str(LEDGER["original_revisions"]), "Original revisions (business txns)"),
-            (str(LEDGER["applied_corrections"]), "Applied correction operations"),
-            (str(LEDGER["rejected_corrections"]), "Rejected corrections"),
-            (str(LEDGER["archived_snapshots"]), "Archived report snapshots"),
+            (str(ledger["original_revisions"]), "Original revisions (business txns)"),
+            (str(ledger["applied_corrections"]), "Applied correction operations"),
+            (str(ledger["rejected_corrections"]), "Rejected corrections"),
+            (str(ledger["archived_snapshots"]), "Archived report snapshots"),
         ])
         + "<div class='grid'>"
         + "<section><h3>Revision / correction state (honest)</h3>"
-        + bars([("ORIGINAL", LEDGER["original_revisions"])], "No revisions")
-        + "<div class='panel'><p class='note'><strong>Distinction (PRD):</strong> business transaction count = originals; accepted revisions = originals + applied correction revisions; applied correction operations = revisions with correction lineage (revision_no &gt; 1); rejected correction count = rows in <code>core.correction_rejection</code>. In the production dataset: <strong>0 applied corrections, 0 rejected</strong>. Correction intents exist in generated data/M3 tests; the full populated ledger holds only ORIGINAL revisions. <code>txn_group_id</code> count is <em>not</em> a correction-operation count.</p></div></section>"
+        + bars([("ORIGINAL", ledger["original_revisions"])], "No revisions")
+        + "<div class='panel'><p class='note'><strong>Distinction (PRD):</strong> business transaction count = originals; accepted revisions = originals + applied correction revisions; applied correction operations = revisions with correction lineage (revision_no &gt; 1); rejected correction count = rows in <code>core.correction_rejection</code>. This pipeline archives <strong>"
+        + str(ledger["applied_corrections"]) + " applied correction(s)</strong> and <strong>"
+        + str(ledger["rejected_corrections"]) + " rejected attempt(s)</strong>; generated correction intents are a separate M2 dataset count. <code>txn_group_id</code> count is <em>not</em> a correction-operation count.</p></div></section>"
         + "<section><h3>Restatement / replay / K1–K2</h3>"
-        + "<div class='panel'><p class='note'>Original vs restated portfolio value/TWR/XIRR, K1/K2 comparisons, deltas, changed revisions, reasons and replay outcomes require archived snapshots and applied corrections. With <strong>0 snapshots</strong> and <strong>0 applied corrections</strong> in the current ledger, there are no restated reports to compare — reported as empty, not fabricated. M6 replay tests demonstrate exact replay and restatement attribution on the correction scenario (§2.2).</p></div></section>"
+        + "<div class='panel'><p class='note'>The deterministic demo archives an original K1 report, applies one correction after K1, verifies exact K1 replay, and generates a K2 restatement. Archived snapshots: <strong>"
+        + str(ledger["archived_snapshots"]) + "</strong>. See <code>RESULTS.md</code> E2–E4 and <code>output/synthetic/pipeline_run/demo_report.json</code> for the recorded status.</p></div></section>"
         + "</div>"
         + "<p class='footer'>" + esc(FOOTER) + "</p>"
     )
 
     scen_rows = [[k, v] for k, v in sens["scenarios"].most_common()]
     status_rows = [[k, v] for k, v in sens["statuses"].most_common()]
+
+    ordered_pairs = sorted(sens["e9_pairs"])
+    quintile_rows: list[list[object]] = []
+    if ordered_pairs:
+        n_pairs = len(ordered_pairs)
+        for index in range(5):
+            lo = index * n_pairs // 5
+            hi = (index + 1) * n_pairs // 5
+            band = ordered_pairs[lo:hi]
+            if not band:
+                continue
+            median_gap = quantiles([gap for _dd, gap in band])["median"]
+            quintile_rows.append(
+                [
+                    f"Q{index + 1}",
+                    len(band),
+                    bp(str(band[0][0])),
+                    bp(str(band[-1][0])),
+                    median_gap,
+                ]
+            )
+
     page4 = (
         "<h2>4. Sensitivity (real NAV paths, pre-registered)</h2>"
         + stat_cards([
-            ("344 / 30", "Eligible / selected paths"),
-            ("40", "Quarterly windows (2016Q1–2025Q4)"),
-            ("1,040", "Eligible windows"),
+            (
+                f"{coverage.get('eligible_schemes', 0)} / {coverage.get('selected_paths', 0)}",
+                "Eligible / selected paths",
+            ),
+            (str(coverage.get("quarter_windows", 0)), "Quarterly windows (2016Q1–2025Q4)"),
+            (str(coverage.get("windows_with_instalments", 0)), "Windows with SIP instalments"),
             (str(sens["detail_rows"]), "Detail rows (E8)"),
         ])
         + "<div class='grid'>"
@@ -234,15 +297,18 @@ def render() -> str:
         + "</section>"
         + "<section><h3>E9 — XIRR minus TWR vs drawdown</h3>"
         + stat_cards([
-            (gap_stats["n"], "Solved gaps (n)"),
+            (str(coverage.get("solved", gap_stats["n"])), "Solved gaps (n)"),
             (gap_stats["median"], "Median (signed) gap"),
             (gap_stats["p95"], "P95 gap"),
-            ("386", "Excluded (no root in domain)"),
+            (str(coverage.get("excluded", 0)), "Excluded (no root in domain)"),
         ])
         + "<div class='panel'><p class='note'>Drawdown (absolute, n="
         + dd_stats["n"] + "): median " + dd_stats["median"] + ", p95 " + dd_stats["p95"]
-        + ". Gaps reported only where XIRR solved (654/1,040); exclusions/multiple-root/non-convergence are disclosed, never averaged away. Correction magnitudes are controlled parameters, not observed error rates.</p>"
+        + ". Gaps reported only where XIRR solved ("
+        + str(coverage.get("solved", 0)) + "/" + str(coverage.get("windows_with_instalments", 0))
+        + "); exclusions/multiple-root/non-convergence are disclosed, never averaged away. Correction magnitudes are controlled parameters, not observed error rates.</p>"
         + "<p class='note'>Frozen config SHA-256: <code>" + esc(sens.get("config_sha256")) + "</code></p></div>"
+        + (table(["Drawdown quintile", "Windows", "Min drawdown", "Max drawdown", "Median XIRR−TWR"], quintile_rows) if quintile_rows else "")
         + "</section></div>"
         + "<div class='panel'><h3>Coverage & qualification</h3><pre class='pre'>"
         + esc(sens.get("coverage_text", "See results/E9_COVERAGE.md"))

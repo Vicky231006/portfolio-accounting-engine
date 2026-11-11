@@ -1,0 +1,822 @@
+{
+  "environment": {
+    "cpu_count": 16,
+    "database_in_docker": "unknown",
+    "docker_image": "postgres:16",
+    "machine": "AMD64",
+    "measured_at_utc": "2026-11-11T06:58:05+00:00",
+    "memory_gb": 15.7,
+    "platform": "Windows-11-10.0.26300-SP0",
+    "postgresql_version": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "python": "3.12.16",
+    "server_settings": {
+      "effective_cache_size": "4GB",
+      "maintenance_work_mem": "64MB",
+      "max_parallel_workers_per_gather": "2",
+      "random_page_cost": "4",
+      "server_version": "16.15 (Debian 16.15-1.pgdg13+2)",
+      "shared_buffers": "128MB",
+      "work_mem": "4MB"
+    }
+  },
+  "identical_results": true,
+  "knowledge_points": [
+    {
+      "known_as_of": "2019-07-29T18:34:00+00:00",
+      "label": "p25",
+      "visible_revisions": 52486
+    },
+    {
+      "known_as_of": "2022-05-05T19:46:00+00:00",
+      "label": "p50",
+      "visible_revisions": 104970
+    },
+    {
+      "known_as_of": "2024-06-24T19:12:30+00:00",
+      "label": "p75",
+      "visible_revisions": 157453
+    },
+    {
+      "known_as_of": "2026-10-31T19:57:00+00:00",
+      "label": "max",
+      "visible_revisions": 209938
+    }
+  ],
+  "metric": "as-of query wall-clock latency (ms)",
+  "phases": {
+    "with_index": {
+      "max": {
+        "known_as_of": "2026-10-31T19:57:00+00:00",
+        "max_ms": 1406.681,
+        "mean_ms": 1308.294,
+        "min_ms": 1252.728,
+        "p50_ms": 1299.424,
+        "p95_ms": 1372.611,
+        "plan": {
+          "execution_ms": 375.855,
+          "indexes_used": [
+            "uq_txn_revision_group_no",
+            "txn_business_pkey"
+          ],
+          "nodes": [
+            {
+              "actual_total_ms": 368.505,
+              "index_name": null,
+              "node_type": "Unique",
+              "shared_hit_blocks": 10409,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 337.55,
+              "index_name": null,
+              "node_type": "Incremental Sort",
+              "shared_hit_blocks": 10409,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 212.23,
+              "index_name": null,
+              "node_type": "Merge Join",
+              "shared_hit_blocks": 10409,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 70.088,
+              "index_name": "uq_txn_revision_group_no",
+              "node_type": "Index Scan",
+              "shared_hit_blocks": 6372,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 25.922,
+              "index_name": "txn_business_pkey",
+              "node_type": "Index Scan",
+              "shared_hit_blocks": 4037,
+              "shared_read_blocks": 0
+            }
+          ],
+          "planning_ms": 0.324
+        },
+        "runs": 30,
+        "timings_ms": [
+          1292.054,
+          1280.103,
+          1280.151,
+          1299.953,
+          1309.788,
+          1294.646,
+          1313.828,
+          1307.17,
+          1288.058,
+          1305.697,
+          1252.728,
+          1298.894,
+          1278.91,
+          1338.146,
+          1289.771,
+          1275.444,
+          1280.352,
+          1297.791,
+          1332.162,
+          1286.107,
+          1296.364,
+          1323.287,
+          1308.533,
+          1278.586,
+          1307.409,
+          1343.19,
+          1406.681,
+          1340.228,
+          1383.622,
+          1359.152
+        ],
+        "visible_revisions": 209938
+      },
+      "p25": {
+        "known_as_of": "2019-07-29T18:34:00+00:00",
+        "max_ms": 285.47,
+        "mean_ms": 264.975,
+        "min_ms": 253.374,
+        "p50_ms": 262.313,
+        "p95_ms": 278.553,
+        "plan": {
+          "execution_ms": 95.943,
+          "indexes_used": [],
+          "nodes": [
+            {
+              "actual_total_ms": 94.012,
+              "index_name": null,
+              "node_type": "Unique",
+              "shared_hit_blocks": 8674,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 86.537,
+              "index_name": null,
+              "node_type": "Gather Merge",
+              "shared_hit_blocks": 8674,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 54.533,
+              "index_name": null,
+              "node_type": "Sort",
+              "shared_hit_blocks": 8674,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 43.601,
+              "index_name": null,
+              "node_type": "Hash Join",
+              "shared_hit_blocks": 8582,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 4.688,
+              "index_name": null,
+              "node_type": "Seq Scan",
+              "shared_hit_blocks": 3230,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 20.807,
+              "index_name": null,
+              "node_type": "Hash",
+              "shared_hit_blocks": 5250,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 11.746,
+              "index_name": null,
+              "node_type": "Seq Scan",
+              "shared_hit_blocks": 5250,
+              "shared_read_blocks": 0
+            }
+          ],
+          "planning_ms": 0.295
+        },
+        "runs": 30,
+        "timings_ms": [
+          262.618,
+          259.838,
+          273.204,
+          267.411,
+          259.845,
+          274.874,
+          261.084,
+          259.928,
+          267.134,
+          265.224,
+          253.374,
+          271.976,
+          265.966,
+          267.743,
+          260.133,
+          261.466,
+          261.734,
+          261.177,
+          268.854,
+          259.305,
+          266.404,
+          285.47,
+          257.024,
+          260.906,
+          262.008,
+          268.199,
+          281.564,
+          261.648,
+          263.936,
+          259.203
+        ],
+        "visible_revisions": 52486
+      },
+      "p50": {
+        "known_as_of": "2022-05-05T19:46:00+00:00",
+        "max_ms": 549.241,
+        "mean_ms": 529.616,
+        "min_ms": 514.652,
+        "p50_ms": 527.069,
+        "p95_ms": 547.988,
+        "plan": {
+          "execution_ms": 177.033,
+          "indexes_used": [],
+          "nodes": [
+            {
+              "actual_total_ms": 172.549,
+              "index_name": null,
+              "node_type": "Unique",
+              "shared_hit_blocks": 8674,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 157.336,
+              "index_name": null,
+              "node_type": "Gather Merge",
+              "shared_hit_blocks": 8674,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 95.166,
+              "index_name": null,
+              "node_type": "Sort",
+              "shared_hit_blocks": 8674,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 64.102,
+              "index_name": null,
+              "node_type": "Hash Join",
+              "shared_hit_blocks": 8582,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 4.747,
+              "index_name": null,
+              "node_type": "Seq Scan",
+              "shared_hit_blocks": 3230,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 33.715,
+              "index_name": null,
+              "node_type": "Hash",
+              "shared_hit_blocks": 5250,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 14.912,
+              "index_name": null,
+              "node_type": "Seq Scan",
+              "shared_hit_blocks": 5250,
+              "shared_read_blocks": 0
+            }
+          ],
+          "planning_ms": 0.31
+        },
+        "runs": 30,
+        "timings_ms": [
+          547.975,
+          529.567,
+          526.251,
+          532.677,
+          549.241,
+          533.327,
+          519.086,
+          532.095,
+          524.803,
+          547.538,
+          524.577,
+          527.541,
+          537.061,
+          522.801,
+          535.286,
+          537.955,
+          523.99,
+          514.652,
+          522.995,
+          548.0,
+          536.215,
+          527.94,
+          523.072,
+          515.73,
+          525.809,
+          519.384,
+          526.598,
+          521.21,
+          523.883,
+          531.22
+        ],
+        "visible_revisions": 104970
+      },
+      "p75": {
+        "known_as_of": "2024-06-24T19:12:30+00:00",
+        "max_ms": 891.446,
+        "mean_ms": 800.945,
+        "min_ms": 767.009,
+        "p50_ms": 792.756,
+        "p95_ms": 873.003,
+        "plan": {
+          "execution_ms": 310.861,
+          "indexes_used": [
+            "uq_txn_revision_group_no",
+            "txn_business_pkey"
+          ],
+          "nodes": [
+            {
+              "actual_total_ms": 305.306,
+              "index_name": null,
+              "node_type": "Unique",
+              "shared_hit_blocks": 10408,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 282.215,
+              "index_name": null,
+              "node_type": "Incremental Sort",
+              "shared_hit_blocks": 10408,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 188.148,
+              "index_name": null,
+              "node_type": "Merge Join",
+              "shared_hit_blocks": 10408,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 62.261,
+              "index_name": "uq_txn_revision_group_no",
+              "node_type": "Index Scan",
+              "shared_hit_blocks": 6372,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 25.607,
+              "index_name": "txn_business_pkey",
+              "node_type": "Index Scan",
+              "shared_hit_blocks": 4036,
+              "shared_read_blocks": 0
+            }
+          ],
+          "planning_ms": 0.271
+        },
+        "runs": 30,
+        "timings_ms": [
+          782.015,
+          796.107,
+          786.407,
+          793.657,
+          779.853,
+          791.855,
+          796.517,
+          774.056,
+          833.128,
+          805.245,
+          851.572,
+          802.496,
+          767.009,
+          783.89,
+          810.855,
+          788.308,
+          778.152,
+          779.793,
+          768.401,
+          802.828,
+          794.77,
+          890.537,
+          891.446,
+          850.28,
+          786.684,
+          789.307,
+          782.264,
+          799.653,
+          796.493,
+          774.767
+        ],
+        "visible_revisions": 157453
+      }
+    },
+    "without_index": {
+      "max": {
+        "known_as_of": "2026-10-31T19:57:00+00:00",
+        "max_ms": 1378.197,
+        "mean_ms": 1314.718,
+        "min_ms": 1255.283,
+        "p50_ms": 1315.601,
+        "p95_ms": 1368.384,
+        "plan": {
+          "execution_ms": 404.641,
+          "indexes_used": [
+            "uq_txn_revision_group_no",
+            "txn_business_pkey"
+          ],
+          "nodes": [
+            {
+              "actual_total_ms": 396.606,
+              "index_name": null,
+              "node_type": "Unique",
+              "shared_hit_blocks": 10409,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 363.066,
+              "index_name": null,
+              "node_type": "Incremental Sort",
+              "shared_hit_blocks": 10409,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 228.118,
+              "index_name": null,
+              "node_type": "Merge Join",
+              "shared_hit_blocks": 10409,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 75.415,
+              "index_name": "uq_txn_revision_group_no",
+              "node_type": "Index Scan",
+              "shared_hit_blocks": 6372,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 28.146,
+              "index_name": "txn_business_pkey",
+              "node_type": "Index Scan",
+              "shared_hit_blocks": 4037,
+              "shared_read_blocks": 0
+            }
+          ],
+          "planning_ms": 0.232
+        },
+        "runs": 30,
+        "timings_ms": [
+          1378.197,
+          1372.971,
+          1288.454,
+          1290.925,
+          1255.283,
+          1362.778,
+          1298.866,
+          1290.033,
+          1314.643,
+          1344.621,
+          1272.137,
+          1275.218,
+          1273.938,
+          1296.351,
+          1336.793,
+          1325.943,
+          1339.131,
+          1352.882,
+          1265.59,
+          1348.294,
+          1316.559,
+          1349.869,
+          1357.331,
+          1275.966,
+          1304.931,
+          1323.912,
+          1277.903,
+          1275.245,
+          1357.899,
+          1318.87
+        ],
+        "visible_revisions": 209938
+      },
+      "p25": {
+        "known_as_of": "2019-07-29T18:34:00+00:00",
+        "max_ms": 284.743,
+        "mean_ms": 269.941,
+        "min_ms": 261.059,
+        "p50_ms": 268.483,
+        "p95_ms": 281.827,
+        "plan": {
+          "execution_ms": 97.663,
+          "indexes_used": [],
+          "nodes": [
+            {
+              "actual_total_ms": 95.648,
+              "index_name": null,
+              "node_type": "Unique",
+              "shared_hit_blocks": 8674,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 87.817,
+              "index_name": null,
+              "node_type": "Gather Merge",
+              "shared_hit_blocks": 8674,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 54.215,
+              "index_name": null,
+              "node_type": "Sort",
+              "shared_hit_blocks": 8674,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 43.369,
+              "index_name": null,
+              "node_type": "Hash Join",
+              "shared_hit_blocks": 8582,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 4.744,
+              "index_name": null,
+              "node_type": "Seq Scan",
+              "shared_hit_blocks": 3230,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 20.844,
+              "index_name": null,
+              "node_type": "Hash",
+              "shared_hit_blocks": 5250,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 11.939,
+              "index_name": null,
+              "node_type": "Seq Scan",
+              "shared_hit_blocks": 5250,
+              "shared_read_blocks": 0
+            }
+          ],
+          "planning_ms": 0.222
+        },
+        "runs": 30,
+        "timings_ms": [
+          280.756,
+          271.834,
+          284.743,
+          267.896,
+          270.337,
+          263.973,
+          269.625,
+          268.318,
+          279.175,
+          268.544,
+          263.295,
+          274.653,
+          262.477,
+          268.421,
+          262.121,
+          267.401,
+          274.042,
+          263.605,
+          261.059,
+          278.592,
+          270.601,
+          271.232,
+          272.498,
+          282.703,
+          270.02,
+          267.68,
+          265.858,
+          265.211,
+          267.729,
+          263.832
+        ],
+        "visible_revisions": 52486
+      },
+      "p50": {
+        "known_as_of": "2022-05-05T19:46:00+00:00",
+        "max_ms": 656.598,
+        "mean_ms": 541.955,
+        "min_ms": 517.844,
+        "p50_ms": 539.271,
+        "p95_ms": 561.321,
+        "plan": {
+          "execution_ms": 246.866,
+          "indexes_used": [],
+          "nodes": [
+            {
+              "actual_total_ms": 242.391,
+              "index_name": null,
+              "node_type": "Unique",
+              "shared_hit_blocks": 8674,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 227.414,
+              "index_name": null,
+              "node_type": "Gather Merge",
+              "shared_hit_blocks": 8674,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 163.002,
+              "index_name": null,
+              "node_type": "Sort",
+              "shared_hit_blocks": 8674,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 126.654,
+              "index_name": null,
+              "node_type": "Hash Join",
+              "shared_hit_blocks": 8582,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 5.613,
+              "index_name": null,
+              "node_type": "Seq Scan",
+              "shared_hit_blocks": 3230,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 87.868,
+              "index_name": null,
+              "node_type": "Hash",
+              "shared_hit_blocks": 5250,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 38.362,
+              "index_name": null,
+              "node_type": "Seq Scan",
+              "shared_hit_blocks": 5250,
+              "shared_read_blocks": 0
+            }
+          ],
+          "planning_ms": 0.493
+        },
+        "runs": 30,
+        "timings_ms": [
+          539.736,
+          539.029,
+          532.346,
+          531.334,
+          550.528,
+          656.598,
+          532.804,
+          539.513,
+          542.505,
+          534.354,
+          539.606,
+          547.977,
+          550.045,
+          533.821,
+          536.065,
+          543.878,
+          519.143,
+          544.779,
+          546.727,
+          532.119,
+          517.844,
+          542.932,
+          527.564,
+          520.515,
+          531.122,
+          526.36,
+          537.787,
+          540.453,
+          553.244,
+          567.929
+        ],
+        "visible_revisions": 104970
+      },
+      "p75": {
+        "known_as_of": "2024-06-24T19:12:30+00:00",
+        "max_ms": 829.669,
+        "mean_ms": 797.296,
+        "min_ms": 778.702,
+        "p50_ms": 795.198,
+        "p95_ms": 822.144,
+        "plan": {
+          "execution_ms": 305.506,
+          "indexes_used": [
+            "uq_txn_revision_group_no",
+            "txn_business_pkey"
+          ],
+          "nodes": [
+            {
+              "actual_total_ms": 300.146,
+              "index_name": null,
+              "node_type": "Unique",
+              "shared_hit_blocks": 10408,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 276.956,
+              "index_name": null,
+              "node_type": "Incremental Sort",
+              "shared_hit_blocks": 10408,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 183.821,
+              "index_name": null,
+              "node_type": "Merge Join",
+              "shared_hit_blocks": 10408,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 60.588,
+              "index_name": "uq_txn_revision_group_no",
+              "node_type": "Index Scan",
+              "shared_hit_blocks": 6372,
+              "shared_read_blocks": 0
+            },
+            {
+              "actual_total_ms": 25.01,
+              "index_name": "txn_business_pkey",
+              "node_type": "Index Scan",
+              "shared_hit_blocks": 4036,
+              "shared_read_blocks": 0
+            }
+          ],
+          "planning_ms": 0.235
+        },
+        "runs": 30,
+        "timings_ms": [
+          792.223,
+          779.164,
+          800.195,
+          815.453,
+          795.586,
+          804.424,
+          812.954,
+          790.354,
+          782.07,
+          794.861,
+          791.151,
+          783.368,
+          803.674,
+          809.959,
+          783.582,
+          806.689,
+          798.353,
+          779.326,
+          795.535,
+          829.669,
+          811.21,
+          827.618,
+          780.525,
+          801.358,
+          778.702,
+          794.419,
+          788.525,
+          805.273,
+          791.695,
+          790.965
+        ],
+        "visible_revisions": 157453
+      }
+    }
+  },
+  "result_digests": {
+    "max": {
+      "with_index": "5309ddab2d4bf84a65e065cd1d15d06c07ce0464a1931953b9cf4dd4bd36b07f",
+      "without_index": "5309ddab2d4bf84a65e065cd1d15d06c07ce0464a1931953b9cf4dd4bd36b07f"
+    },
+    "p25": {
+      "with_index": "1836a86144db220e7d5a4a269cf9ba1899becae42c2d5905ff050e7b901d758d",
+      "without_index": "1836a86144db220e7d5a4a269cf9ba1899becae42c2d5905ff050e7b901d758d"
+    },
+    "p50": {
+      "with_index": "2c4eaae6a06baa2b68b489ffe7710908c34e73cd28684a4c53180be80c5f65d1",
+      "without_index": "2c4eaae6a06baa2b68b489ffe7710908c34e73cd28684a4c53180be80c5f65d1"
+    },
+    "p75": {
+      "with_index": "adc97b67c18aa2d7cc20e31fa8fbfafe537a7ee636ca21d1a44fae745d737f26",
+      "without_index": "adc97b67c18aa2d7cc20e31fa8fbfafe537a7ee636ca21d1a44fae745d737f26"
+    }
+  },
+  "row_counts": {
+    "account": 1000,
+    "correction_group": 1,
+    "investor": 600,
+    "nav_observation": 1811703,
+    "report_snapshot": 1,
+    "txn_business": 209937,
+    "txn_revision": 209938
+  },
+  "runs": 30,
+  "warmup": 3
+}

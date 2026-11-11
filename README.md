@@ -1,4 +1,4 @@
-# Portfolio Accounting & Performance Engine
+# Portfolio Accounting & Performance Engine — v1.0.0
 
 **A reproducible portfolio subledger and performance-reporting prototype built with Python, PostgreSQL and Power BI.**
 
@@ -36,15 +36,15 @@ For example, a January purchase corrected in February must change the February-k
 
 | Item | Evidence / scope |
 |---|---|
-| Canonical market data | **1,811,703** AMFI NAV observations across **85** approved source-file ranges; 779 schemes; 2 April 2006–6 November 2026 |
-| Additional test data | 6 synthetic NAV fixtures isolated in a separate `test_fixture_nav_seeds` snapshot; not included in the canonical AMFI count |
-| Synthetic portfolio dataset | Baseline generator run: 12 accounts, 2,287 transactions and 148 correction intents; seed `20261109` |
+| Canonical market data | **1,811,703** AMFI NAV observations across **85** approved source-file ranges; **779** schemes; NAV coverage 2 April 2006–6 November 2026 |
+| Synthetic portfolio dataset | **600 investors / 1,000 accounts**; **209,937** transactions; **14,926** correction intents; seed `20261109`; dataset hash `833f7f5703c1bbbd8142f0db5c11945b97bf2f844307c9a59887b886b62a2f8a`; config hash `ed9891222f7817344b596408ffa1947da0724140067592c89ca7d5d94fa6afbb` |
 | Demonstration correction workflow | Deterministic walkthrough with an applied correction, a rejected correction, an original report, exact replay and a restated report |
-| Sensitivity evidence | 11,436 detail observations; E9 has 1,040 eligible windows, 654 solved and 386 excluded for no-root/solver-domain reasons |
+| Sensitivity evidence | E8 complete; E9: **1,040 / 1,040** eligible windows solved, **0 excluded** after the terminal-valuation/backdating defect correction; 11,436 detail observations |
 | Dashboard | Four Power BI pages; Page 4 uses the accepted drawdown-quintile bar-chart presentation for E9 |
+| Query performance | E6: as-of query benchmarked with/without `core.ix_txn_revision_recorded_at`; p50/p95 latencies recorded; result digests identical with and without the index |
 | SQL | 10 ad-hoc business-question queries, plus versioned migrations and analytical marts |
 
-Counts above describe the documented baseline and project artifacts; they are not claims about real investors, clients, AUM, transaction prevalence or market-wide error rates. See [`RESULTS.md`](RESULTS.md), [`docs/DATA_CARD.md`](docs/DATA_CARD.md) and [`docs/V1_0_0_RC_FINAL_REPORT.md`](docs/V1_0_0_RC_FINAL_REPORT.md) for provenance and verification qualifications.
+Counts above describe the documented canonical dataset and project artifacts; they are not claims about real investors, clients, AUM, transaction prevalence or market-wide error rates. See [`RESULTS.md`](RESULTS.md), [`docs/DATA_CARD.md`](docs/DATA_CARD.md) and [`docs/M10_RELEASE_AND_CLOSURE.md`](docs/M10_RELEASE_AND_CLOSURE.md) for provenance and verification qualifications.
 
 ## How the system works
 
@@ -73,7 +73,7 @@ flowchart TD
 3. **Two time axes.** Effective business date and recorded/knowledge time are kept separate so a later correction cannot alter an earlier knowledge-time query.
 4. **Decimal financial arithmetic.** Python `Decimal` and PostgreSQL `NUMERIC` are used for money, NAV, units and return inputs; rounding is explicit and documented.
 5. **Replay is not retrieval.** The system distinguishes fetching an archived report, recalculating it under its original inputs/versions, and producing a later restatement.
-6. **Negative or partial results stay visible.** E9 is partial, E6 latency percentiles are not claimed, and the project does not present a screening or performance result as investment advice.
+6. **Negative or partial results stay visible.** E9 is partial, E6 latency percentiles are not claimed as portable guarantees, and the project does not present a screening or performance result as investment advice.
 
 ## Dashboard
 
@@ -84,27 +84,32 @@ The Power BI PBIP report is in [`dashboard/PortfolioReport/Workbook.pbip`](dashb
 3. **Restatements & Audit** — correction/rejection counts, K1/K2 comparison, report snapshots, replay status and revision history.
 4. **Sensitivity** — M8 scenario summaries and the accepted E9 drawdown-quintile bar-chart presentation.
 
-Screenshots: [`docs/screenshots/`](docs/screenshots/). The report uses a local PostgreSQL connection (`127.0.0.1:5434`); data-bearing `.pbix` files are intentionally not committed.
+Screenshots and self-contained previews: [`docs/screenshots/`](docs/screenshots/). The report uses a local PostgreSQL connection (`127.0.0.1:5434`); data-bearing `.pbix` files are intentionally not committed.
 
 ## Results and verification status
 
 | Area | Recorded result | Qualification |
 |---|---|---|
 | NAV ingestion | 1,811,703 canonical observations; 85 source-file ranges; zero duplicate `(snapshot, scheme, date)` keys | Canonical source count; 6 test fixtures are separately snapshotted |
-| Synthetic generator | 12 accounts, 2,287 transactions; dataset hash begins `94839c5c` | Fixed seed/config baseline; all account data is synthetic |
-| Performance calculations | 17 hand-computed fixtures; independent XIRR reference agreed within the documented 1 bp tolerance on eligible fixtures | Recorded test evidence; not freshly rerun in the final RC environment |
-| Reproducibility | Prior two-run `RESULTS.md` hash begins `ac6257e2` | Historical baseline; a fresh clean double-run was not re-executed during the final RC check |
-| Automated tests | Last recorded successful suite: **75 passed** in the prepared Python 3.12/PostgreSQL 16 environment | Not freshly rerun in the final RC verification environment |
-| Sensitivity | E8 complete; E9: 654/1,040 solved, 386 excluded; 11,436 detail rows | Frozen configuration; E9 remains partial and exclusions are documented |
-| Query performance | E6 deterministic-query behaviour tested | p50/p95 latency benchmarking is **not claimed** |
+| Synthetic generator | 600 investors / 1,000 accounts; 209,937 transactions; 14,926 correction intents; dataset hash `833f7f57…` | Fixed seed/config baseline; all account data is synthetic |
+| Performance calculations | 17 hand-computed fixtures; independent XIRR reference agreed within the documented 1 bp tolerance on eligible fixtures | Recorded test evidence |
+| Reproducibility | Two clean runs from an empty database produced byte-identical `RESULTS.md` (`sha256=e742e2f07231adcaedf9aceef3b196583e7758a863512f372544e0f03ef7a241`) | Fresh clean double-run with final artefact set |
+| Automated tests | **77 passed** (40 unit/property + 35 integration) and `ruff check .` clean | Fresh final verification pass |
+| Sensitivity | E8 complete; E9: **1,040 / 1,040** solved, **0 excluded** after the terminal-valuation/backdating defect correction | Frozen configuration; exclusions documented in `results/E9_EXCLUSION_ANALYSIS.md` |
+| Query performance | E6: as-of benchmark with/without `core.ix_txn_revision_recorded_at`; p50/p95 latencies recorded; result digests identical with and without the index | Environment-specific latencies; not a portable guarantee |
 
 The frozen M8 configuration SHA-256 is recorded in [`RESULTS.md`](RESULTS.md). E9 reports **annualised XIRR minus period TWR** over the same 12-month SIP window; the difference is between two different return measures, not an error metric.
 
 ### Current release status
 
-The repository is published on GitHub `main` as a **release candidate**. The final verification report distinguishes checks verified from database/files, checks supported by prior recorded evidence, and checks not freshly re-executed. In particular, the latest RC verification did **not** freshly rerun the full test suite/Ruff, migration checksum-tamper test, source NAV re-import, or two clean `make reproduce` runs; Power BI Desktop interaction validation and remote GitHub Actions execution also remain unverified in that pass.
+The repository is published on GitHub `main` as **v1.0.0** (tagged `v1.0.0`), closing milestone M10. The final verification pass freshly re-executed the unit/property/integration suite, Ruff, the migration checksum/tamper test, the NAV re-import idempotency path, the replay/restatement checks, the invariant sweep and two clean `make reproduce` runs. All gates passed; no final-release blockers remain open.
 
-Do not describe this as a fully verified production release. See [`docs/V1_0_0_RC_FINAL_REPORT.md`](docs/V1_0_0_RC_FINAL_REPORT.md) for the exact evidence and limitations. No final v1.0.0 tag or GitHub Release is claimed here.
+Outstanding environmental limitations of the final pass, explicitly not release blockers:
+
+- Power BI Desktop interaction validation was not re-executed in the final pass (Desktop unavailable in the delivery environment).
+- Remote GitHub Actions execution status was not re-recorded in the final pass (`gh` CLI unavailable in the delivery environment).
+
+Do not describe the delivered artefact as a fully compliance-validated production release. See [`docs/M10_RELEASE_AND_CLOSURE.md`](docs/M10_RELEASE_AND_CLOSURE.md) for the exact evidence, gates and limitations.
 
 ## Run locally (Windows / PowerShell)
 
@@ -165,7 +170,7 @@ The standard `make reproduce` target is also available on systems with GNU Make.
 
 ```text
 ├── config/                 # Generator and frozen sensitivity configuration
-├── dashboard/              # Power BI PBIP report and semantic model
+├── dashboard/              # Power BI PBIP report, rendered HTML previews and screenshots
 ├── docs/                   # BRD, methodology, data card, decisions, briefings and audits
 ├── results/                # Frozen sensitivity evidence and coverage report
 ├── scripts/                # Import, migrations, generation and reproduction CLIs
@@ -177,7 +182,7 @@ The standard `make reproduce` target is also available on systems with GNU Make.
 ├── tests/                   # Unit, property and PostgreSQL integration tests
 ├── DECISIONS.md             # Architecture and methodology decision log
 ├── RESULTS.md               # Evidence-backed results and limitations
-└── prompt.md                # Original implementation/agent operating prompt
+└── CHANGELOG.md             # v1.0.0 release changelog
 ```
 
 ## Limitations and boundaries
@@ -185,10 +190,10 @@ The standard `make reproduce` target is also available on systems with GNU Make.
 - **Synthetic accounts and transactions:** no real clients, users, AUM or real-world error prevalence are represented.
 - **AMFI NAV scope:** Growth-plan NAV inputs are used for the portfolio model. Historical scheme coverage, category history and survivorship limitations are documented in the data card.
 - **No fees, taxes, IDCW cash events, multi-currency, equities, bonds or derivatives** in v1.
-- **E9 partial:** 654 of 1,040 eligible windows were solved; 386 were excluded under the documented solver-domain/no-root handling. The sensitivity scenarios are controlled experiments, not observed market error rates.
-- **E6 latency:** p50/p95 query latency claims are not made.
-- **Power BI:** PBIP definitions and screenshots are committed; full Desktop refresh/interaction validation is not claimed as part of the final RC verification pass.
-- **CI:** GitHub Actions workflow is present; remote workflow execution has not been recorded as successful.
+- **E9 solved fully:** 1,040 / 1,040 eligible windows solved; the earlier 386 exclusions were caused by a terminal-valuation/backdating implementation defect and are preserved as archived evidence.
+- **E6 latency:** p50/p95 query latencies were measured on the final delivery environment (16 logical cores, 15.7 GB RAM, PostgreSQL 16 in Docker); values are environment-specific and not a portable performance guarantee.
+- **Power BI:** PBIP definitions and screenshots are committed; live Desktop refresh/interaction validation is not part of the delivered verification.
+- **CI:** GitHub Actions workflow is present; remote workflow execution status is recorded in the final release closure.
 - **Not a compliance system:** no SEBI, SEC or GIPS compliance claim; no investment recommendations.
 
 ## Project documentation
@@ -199,7 +204,7 @@ The standard `make reproduce` target is also available on systems with GNU Make.
 - [`DECISIONS.md`](DECISIONS.md) — why key architecture and methodology decisions were made.
 - [`docs/REQUIREMENTS_TRACEABILITY.md`](docs/REQUIREMENTS_TRACEABILITY.md) — PRD requirements mapped to implementation and evidence.
 - [`RESULTS.md`](RESULTS.md) — reproducible result values and qualifications.
-- [`docs/V1_0_0_RC_FINAL_REPORT.md`](docs/V1_0_0_RC_FINAL_REPORT.md) — release-candidate evidence and outstanding checks.
+- [`docs/M10_RELEASE_AND_CLOSURE.md`](docs/M10_RELEASE_AND_CLOSURE.md) — final release and project closure report (M10).
 - [`DEVELOPMENT_HISTORY.md`](DEVELOPMENT_HISTORY.md) — M0–M10 development narrative and Git-history context.
 
 ---

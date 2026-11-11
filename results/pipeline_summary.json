@@ -1,0 +1,50 @@
+{
+  "demo": {
+    "applied_corrections": 1,
+    "archived_report_snapshots": 1,
+    "rejected_corrections": 1,
+    "replay_after_correction": "REPLAY_EXACT",
+    "replay_status": "REPLAY_EXACT",
+    "restatement_status": "RESTATEMENT_GENERATED"
+  },
+  "generator": {
+    "config_path": "config/generator.yaml",
+    "config_sha256": "ed9891222f7817344b596408ffa1947da0724140067592c89ca7d5d94fa6afbb",
+    "counts": {
+      "accounts": 1000,
+      "active_accounts": 844,
+      "closed_accounts": 156,
+      "correction_intents": 14926,
+      "investors": 600,
+      "transactions": 209937
+    },
+    "dataset_sha256": "833f7f5703c1bbbd8142f0db5c11945b97bf2f844307c9a59887b886b62a2f8a",
+    "seed": 20261109,
+    "transactions_by_type": {
+      "CONTRIBUTION": 26049,
+      "PURCHASE": 10712,
+      "REDEMPTION": 1618,
+      "SIP_INSTALMENT": 153425,
+      "SWITCH": 13797,
+      "WITHDRAWAL": 4336
+    },
+    "version": "generator-1.0.0"
+  },
+  "ingest": {
+    "created": 209937,
+    "skipped": 0
+  },
+  "invariants": {
+    "accounts_checked": 1000,
+    "failed": 0,
+    "passed": 1000
+  },
+  "nav": {
+    "observations": 1811703,
+    "schemes": 779,
+    "snapshot_id": 1
+  },
+  "project": "bitemporal-ledger",
+  "release": "1.0.0",
+  "results_sha256": "e742e2f07231adcaedf9aceef3b196583e7758a863512f372544e0f03ef7a241"
+}

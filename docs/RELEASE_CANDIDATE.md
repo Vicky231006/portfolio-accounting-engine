@@ -1,5 +1,11 @@
 # v1.0.0 Release Candidate Report
 
+> **SUPERSEDED (2026-11-11).** This file is retained as historical evidence of the
+> release-candidate state on 2026-11-10. It is **not** the current release
+> status. The final verified v1.0.0 report is
+> [`docs/V1_0_0_FINAL_REPORT.md`](V1_0_0_FINAL_REPORT.md); see also
+> [`CHANGELOG.md`](../CHANGELOG.md) and [`docs/M10_RELEASE_AND_CLOSURE.md`](M10_RELEASE_AND_CLOSURE.md).
+
 **Date:** 2026-11-10  
 **Status:** Release candidate — pending final approval. **No push, publish, tag or release has occurred.**  
 **Dashboard:** frozen (M9 visually accepted by Vicky, 2026-11-10; E9 drawdown-quintile bar chart final). **M8 sensitivity frozen.** No further feature development.

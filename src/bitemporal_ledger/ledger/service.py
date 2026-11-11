@@ -166,85 +166,116 @@ class LedgerService:
         investors = json.loads(Path(investors_path).read_text(encoding="utf-8"))
         accounts = json.loads(Path(accounts_path).read_text(encoding="utf-8"))
         transactions = json.loads(Path(transactions_path).read_text(encoding="utf-8"))
-        created = 0
-        skipped = 0
+
+        # Validate the whole batch before touching the database, so a rejected
+        # row cannot leave a partially ingested dataset behind.
+        for txn in transactions:
+            if txn["txn_type"] not in _TXN_TYPES:
+                raise ValueError(f"Unapproved transaction type {txn['txn_type']!r} in M2 output")
+            for field_name in ("amount_instructed", "units_instructed"):
+                if txn.get(field_name) is not None and Decimal(str(txn[field_name])) <= 0:
+                    raise ValueError(f"Non-positive {field_name} in {txn['txn_group_id']}")
+
         with self._connect() as conn:
             with conn.cursor() as cur:
-                for inv in investors:
-                    cur.execute(
-                        "INSERT INTO core.investor (investor_id, synthetic_ref, display_name, data_class, synthetic_label)"
-                        " VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING",
-                        (inv["investor_id"], inv["synthetic_ref"], inv["display_name"], inv["data_class"], inv["synthetic_label"]),
-                    )
-                for acc in accounts:
-                    cur.execute(
-                        "INSERT INTO core.account (account_id, synthetic_ref, investor_id, display_name, account_status, currency, opened_date, closed_date, data_class, synthetic_label)"
-                        " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT DO NOTHING",
+                # Reference data is small; executemany is already efficient.
+                cur.executemany(
+                    "INSERT INTO core.investor (investor_id, synthetic_ref, display_name, data_class, synthetic_label)"
+                    " VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING",
+                    [
+                        (inv["investor_id"], inv["synthetic_ref"], inv["display_name"], inv["data_class"], inv["synthetic_label"])
+                        for inv in investors
+                    ],
+                )
+                cur.executemany(
+                    "INSERT INTO core.account (account_id, synthetic_ref, investor_id, display_name, account_status, currency, opened_date, closed_date, data_class, synthetic_label)"
+                    " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT DO NOTHING",
+                    [
                         (
                             acc["account_id"], acc["synthetic_ref"], acc["investor_id"], acc["display_name"],
                             acc["account_status"], acc["currency"], acc["opened_date"], acc["closed_date"],
                             acc["data_class"], acc["synthetic_label"],
-                        ),
-                    )
-                for txn in transactions:
-                    cur.execute("SELECT 1 FROM core.txn_business WHERE txn_group_id = %s", (txn["txn_group_id"],))
-                    if cur.fetchone() is not None:
-                        skipped += 1
-                        continue
-                    if txn["txn_type"] not in _TXN_TYPES:
-                        raise ValueError(f"Unapproved transaction type {txn['txn_type']!r} in M2 output")
-                    for field_name in ("amount_instructed", "units_instructed"):
-                        if txn.get(field_name) is not None and Decimal(str(txn[field_name])) <= 0:
-                            raise ValueError(f"Non-positive {field_name} in {txn['txn_group_id']}")
-                    cur.execute(
-                        "INSERT INTO core.txn_business (txn_group_id, account_id, investor_id, data_class, synthetic_label)"
-                        " VALUES (%s, %s, %s, %s, %s)",
-                        (txn["txn_group_id"], txn["account_id"], txn["investor_id"], txn["data_class"], txn["synthetic_label"]),
+                        )
+                        for acc in accounts
+                    ],
+                )
+
+                # Skip already-ingested groups with one query rather than one
+                # query per transaction (idempotent re-ingestion).
+                all_group_ids = [txn["txn_group_id"] for txn in transactions]
+                cur.execute(
+                    "SELECT txn_group_id FROM core.txn_business WHERE txn_group_id = ANY(%s)",
+                    (all_group_ids,),
+                )
+                existing = {row[0] for row in cur.fetchall()}
+                new_txns = [txn for txn in transactions if txn["txn_group_id"] not in existing]
+                skipped = len(transactions) - len(new_txns)
+
+                business_rows: list[tuple] = []
+                revision_rows: list[tuple] = []
+                for txn in new_txns:
+                    business_rows.append(
+                        (txn["txn_group_id"], txn["account_id"], txn["investor_id"], txn["data_class"], txn["synthetic_label"])
                     )
                     recorded_at = self._as_utc(datetime.fromisoformat(str(txn["recorded_at"]).replace("Z", "+00:00")))
                     date.fromisoformat(str(txn["effective_date"]))
                     allotment_raw = txn.get("allotment_date")
                     allotment = date.fromisoformat(str(allotment_raw)) if allotment_raw else None
                     # SWITCH legs share the single M2 allotment date (= effective_date in M2 output).
-                    cur.execute(
-                        "INSERT INTO core.txn_revision (txn_group_id, revision_no, revision_kind, revision_status, txn_type,"
-                        " instruction_date, effective_date, allotment_date, source_nav_date, target_allotment_date, posting_sequence,"
-                        " scheme_code, source_scheme_code, target_scheme_code, amount_instructed, units_instructed, recorded_at,"
-                        " data_class, synthetic_label) VALUES (%s, 1, 'ORIGINAL', 'ACCEPTED', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    source_nav_date = allotment if txn["txn_type"] == "SWITCH" else None
+                    revision_rows.append(
                         (
                             txn["txn_group_id"], txn["txn_type"], txn["instruction_date"], txn["effective_date"],
-                            allotment, allotment if txn["txn_type"] == "SWITCH" else None,
-                            allotment if txn["txn_type"] == "SWITCH" else None,
+                            allotment, source_nav_date, source_nav_date,
                             txn["posting_sequence"], txn.get("scheme_code"), txn.get("source_scheme_code"),
                             txn.get("target_scheme_code"), txn.get("amount_instructed"), txn.get("units_instructed"),
                             recorded_at, txn["data_class"], txn["synthetic_label"],
-                        ),
+                        )
                     )
-                    cur.execute(
-                        "SELECT txn_revision_id FROM core.txn_revision WHERE txn_group_id = %s AND revision_no = 1",
-                        (txn["txn_group_id"],),
+
+                if business_rows:
+                    cur.executemany(
+                        "INSERT INTO core.txn_business (txn_group_id, account_id, investor_id, data_class, synthetic_label)"
+                        " VALUES (%s, %s, %s, %s, %s)",
+                        business_rows,
                     )
-                    revision_id = cur.fetchone()[0]
+                    cur.executemany(
+                        "INSERT INTO core.txn_revision (txn_group_id, revision_no, revision_kind, revision_status, txn_type,"
+                        " instruction_date, effective_date, allotment_date, source_nav_date, target_allotment_date, posting_sequence,"
+                        " scheme_code, source_scheme_code, target_scheme_code, amount_instructed, units_instructed, recorded_at,"
+                        " data_class, synthetic_label)"
+                        " VALUES (%s, 1, 'ORIGINAL', 'ACCEPTED', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                        revision_rows,
+                    )
+                    new_ids = [txn["txn_group_id"] for txn in new_txns]
+                    # Both projections are derived set-based from the immutable
+                    # revisions just written; this removes two round-trips per
+                    # transaction while preserving the same rows.
                     cur.execute(
                         "INSERT INTO core.txn_revision_period (txn_revision_id, txn_group_id, system_period)"
-                        " VALUES (%s, %s, tstzrange(%s, 'infinity', '[)'))",
-                        (revision_id, txn["txn_group_id"], recorded_at),
+                        " SELECT r.txn_revision_id, r.txn_group_id, tstzrange(r.recorded_at, 'infinity', '[)')"
+                        " FROM core.txn_revision r"
+                        " WHERE r.txn_group_id = ANY(%s) AND r.revision_no = 1"
+                        " AND NOT EXISTS ("
+                        "   SELECT 1 FROM core.txn_revision_period p WHERE p.txn_revision_id = r.txn_revision_id"
+                        " )",
+                        (new_ids,),
                     )
                     cur.execute(
                         "INSERT INTO core.txn_version_current (txn_group_id, latest_revision_id, revision_no, txn_type, instruction_date,"
                         " effective_date, allotment_date, source_nav_date, target_allotment_date, posting_sequence, scheme_code,"
                         " source_scheme_code, target_scheme_code, amount_instructed, units_instructed, recorded_at, is_voided, data_class, synthetic_label)"
-                        " VALUES (%s, %s, 1, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, FALSE, %s, %s)",
-                        (
-                            txn["txn_group_id"], revision_id, txn["txn_type"], txn["instruction_date"], txn["effective_date"],
-                            allotment, allotment if txn["txn_type"] == "SWITCH" else None,
-                            allotment if txn["txn_type"] == "SWITCH" else None,
-                            txn["posting_sequence"], txn.get("scheme_code"), txn.get("source_scheme_code"),
-                            txn.get("target_scheme_code"), txn.get("amount_instructed"), txn.get("units_instructed"),
-                            recorded_at, txn["data_class"], txn["synthetic_label"],
-                        ),
+                        " SELECT DISTINCT ON (r.txn_group_id) r.txn_group_id, r.txn_revision_id, r.revision_no, r.txn_type,"
+                        " r.instruction_date, r.effective_date, r.allotment_date, r.source_nav_date, r.target_allotment_date,"
+                        " r.posting_sequence, r.scheme_code, r.source_scheme_code, r.target_scheme_code, r.amount_instructed,"
+                        " r.units_instructed, r.recorded_at, (r.revision_status = 'VOIDED'), r.data_class, r.synthetic_label"
+                        " FROM core.txn_revision r"
+                        " WHERE r.txn_group_id = ANY(%s)"
+                        " ORDER BY r.txn_group_id, r.revision_no DESC"
+                        " ON CONFLICT (txn_group_id) DO NOTHING",
+                        (new_ids,),
                     )
-                    created += 1
+                created = len(new_txns)
             conn.commit()
         return IngestReport(
             investors_upserted=len(investors),

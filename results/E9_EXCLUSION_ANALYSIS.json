@@ -1,0 +1,235 @@
+{
+  "config_sha256": "93fb380b293e22346df01cbf728a73a957cce8c4798103ffd8c789082ab8ab01",
+  "current": {
+    "by_year": {
+      "2016": {
+        "excluded": 0,
+        "solved": 112,
+        "windows": 112
+      },
+      "2017": {
+        "excluded": 0,
+        "solved": 112,
+        "windows": 112
+      },
+      "2018": {
+        "excluded": 0,
+        "solved": 112,
+        "windows": 112
+      },
+      "2019": {
+        "excluded": 0,
+        "solved": 112,
+        "windows": 112
+      },
+      "2020": {
+        "excluded": 0,
+        "solved": 110,
+        "windows": 110
+      },
+      "2021": {
+        "excluded": 0,
+        "solved": 108,
+        "windows": 108
+      },
+      "2022": {
+        "excluded": 0,
+        "solved": 98,
+        "windows": 98
+      },
+      "2023": {
+        "excluded": 0,
+        "solved": 92,
+        "windows": 92
+      },
+      "2024": {
+        "excluded": 0,
+        "solved": 92,
+        "windows": 92
+      },
+      "2025": {
+        "excluded": 0,
+        "solved": 92,
+        "windows": 92
+      }
+    },
+    "drawdown_quintiles": [
+      {
+        "band": "Q1",
+        "excluded": 0,
+        "exclusion_rate": 0.0,
+        "max_drawdown_bp": "835.2215016798187358387374014",
+        "min_drawdown_bp": "87.84409849316238754575384595",
+        "observations": 208,
+        "solved": 208
+      },
+      {
+        "band": "Q2",
+        "excluded": 0,
+        "exclusion_rate": 0.0,
+        "max_drawdown_bp": "1146.176439735655092835413826",
+        "min_drawdown_bp": "835.2215016798187358387374014",
+        "observations": 208,
+        "solved": 208
+      },
+      {
+        "band": "Q3",
+        "excluded": 0,
+        "exclusion_rate": 0.0,
+        "max_drawdown_bp": "1466.880168639532998216312632",
+        "min_drawdown_bp": "1148.036253776435045317220544",
+        "observations": 208,
+        "solved": 208
+      },
+      {
+        "band": "Q4",
+        "excluded": 0,
+        "exclusion_rate": 0.0,
+        "max_drawdown_bp": "1867.720465890183028286189684",
+        "min_drawdown_bp": "1468.166985142440347524816417",
+        "observations": 208,
+        "solved": 208
+      },
+      {
+        "band": "Q5",
+        "excluded": 0,
+        "exclusion_rate": 0.0,
+        "max_drawdown_bp": "4267.017885378711948793469648",
+        "min_drawdown_bp": "1867.739052725647899910634495",
+        "observations": 208,
+        "solved": 208
+      }
+    ],
+    "excluded": 0,
+    "excluded_mean_drawdown_bp": null,
+    "solved": 1040,
+    "solved_mean_drawdown_bp": "1523.505313851391876459186675",
+    "solved_rate": 1.0,
+    "status_counts": {
+      "SUCCESS": 1040
+    },
+    "windows": 1040
+  },
+  "metric": "annualised XIRR minus period TWR over the same 12-month SIP window (not an error metric)",
+  "original_frozen": {
+    "by_year": {
+      "2016": {
+        "excluded": 91,
+        "solved": 21,
+        "windows": 112
+      },
+      "2017": {
+        "excluded": 85,
+        "solved": 27,
+        "windows": 112
+      },
+      "2018": {
+        "excluded": 78,
+        "solved": 34,
+        "windows": 112
+      },
+      "2019": {
+        "excluded": 77,
+        "solved": 35,
+        "windows": 112
+      },
+      "2020": {
+        "excluded": 54,
+        "solved": 56,
+        "windows": 110
+      },
+      "2021": {
+        "excluded": 0,
+        "solved": 108,
+        "windows": 108
+      },
+      "2022": {
+        "excluded": 1,
+        "solved": 97,
+        "windows": 98
+      },
+      "2023": {
+        "excluded": 0,
+        "solved": 92,
+        "windows": 92
+      },
+      "2024": {
+        "excluded": 0,
+        "solved": 92,
+        "windows": 92
+      },
+      "2025": {
+        "excluded": 0,
+        "solved": 92,
+        "windows": 92
+      }
+    },
+    "drawdown_quintiles": [
+      {
+        "band": "Q1",
+        "excluded": 48,
+        "exclusion_rate": 0.23076923076923078,
+        "max_drawdown_bp": "835.2215016798187358387374013594812",
+        "min_drawdown_bp": "87.84409849316238754575384595164714",
+        "observations": 208,
+        "solved": 160
+      },
+      {
+        "band": "Q2",
+        "excluded": 85,
+        "exclusion_rate": 0.40865384615384615,
+        "max_drawdown_bp": "1146.176439735655092835413825658240",
+        "min_drawdown_bp": "835.2215016798187358387374013594812",
+        "observations": 208,
+        "solved": 123
+      },
+      {
+        "band": "Q3",
+        "excluded": 96,
+        "exclusion_rate": 0.46153846153846156,
+        "max_drawdown_bp": "1466.880168639532998216312631749635",
+        "min_drawdown_bp": "1148.036253776435045317220543806647",
+        "observations": 208,
+        "solved": 112
+      },
+      {
+        "band": "Q4",
+        "excluded": 62,
+        "exclusion_rate": 0.2980769230769231,
+        "max_drawdown_bp": "1867.720465890183028286189683860233",
+        "min_drawdown_bp": "1468.166985142440347524816417394476",
+        "observations": 208,
+        "solved": 146
+      },
+      {
+        "band": "Q5",
+        "excluded": 95,
+        "exclusion_rate": 0.4567307692307692,
+        "max_drawdown_bp": "4267.017885378711948793469647683729",
+        "min_drawdown_bp": "1867.739052725647899910634495084897",
+        "observations": 208,
+        "solved": 113
+      }
+    ],
+    "excluded": 386,
+    "excluded_mean_drawdown_bp": "1734.771792284147648838658991",
+    "solved": 654,
+    "solved_mean_drawdown_bp": "1398.812866336034493984452237",
+    "solved_rate": 0.6288461538461538,
+    "status_counts": {
+      "SUCCESS": 654,
+      "UNKNOWN": 386
+    },
+    "windows": 1040
+  },
+  "root_cause": {
+    "classification": "implementation defect in the sensitivity helper, not a genuine mathematical no-root",
+    "defects": [
+      "terminal valuation used the dataset-wide maximum NAV date instead of the last NAV on or before the 12-month window end",
+      "backdated instalments were shifted by calendar days and silently dropped when the shifted date had no NAV",
+      "sensitivity solver domain was narrower than the documented production XIRR domain",
+      "SIP TWR did not chain-link subperiod returns correctly"
+    ],
+    "evidence": "Exclusions concentrated in 2016-2019 (91/112, 85/112, 78/112, 77/112 in the original run), the windows furthest from the dataset-wide 2026 terminal NAV. Correcting the terminal date and solver domain removes every exclusion."
+  }
+}

@@ -41,6 +41,14 @@ def _step(label, fn):
     return result
 
 
+def _relative_config_path(config_path: str) -> str:
+    path = Path(config_path).resolve()
+    try:
+        return path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.name
+
+
 def _load_intents(run_dir: Path) -> list[dict]:
     return json.loads((run_dir / "correction_intents.json").read_text(encoding="utf-8"))
 
@@ -66,6 +74,31 @@ def _intent_to_request(intent: dict) -> CorrectionRequest:
         proposed_effective_date=d(intent.get("proposed_effective_date")),
         proposed_scheme_code=intent.get("proposed_scheme_code"),
     )
+
+
+def _demo_rejection_target(dsn: str) -> str:
+    """Pick a NAV-dependent transaction deterministically for the rejection demo.
+
+    The target must be a transaction type whose pricing needs a NAV lookup, so
+    proposing an effective date with no NAV coverage is rejected for
+    ``MISSING_NAV_ALLOTMENT``. The selection is a pure ordering on the ingested
+    ledger, so it is stable across dataset sizes.
+    """
+    import psycopg as _psycopg
+
+    with _psycopg.connect(dsn) as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT v.txn_group_id FROM core.txn_version_current v"
+                " WHERE v.txn_type IN ('PURCHASE','REDEMPTION','SWITCH','SIP_INSTALMENT')"
+                " AND v.recorded_at < %s"
+                " ORDER BY v.txn_group_id LIMIT 1",
+                (K2,),
+            )
+            row = cur.fetchone()
+    # If no NAV-dependent transaction exists, an unknown id still exercises the
+    # real INVALID_REFERENCE rejection path rather than bypassing it.
+    return row[0] if row else "SYN_TXN-NO-NAV-TARGET"
 
 
 def _run_demo(dsn: str, snapshot_id: int, run_dir: Path) -> dict:
@@ -158,7 +191,7 @@ def _run_demo(dsn: str, snapshot_id: int, run_dir: Path) -> dict:
     # 3) One deterministic invalid correction attempt (real rejection path, not bypassed).
     #    Propose an effective date with no NAV coverage -> MISSING_NAV_ALLOTMENT rejection.
     invalid_req = CorrectionRequest(
-        txn_group_id="SYN_TXN-000014",
+        txn_group_id=_demo_rejection_target(dsn),
         correction_type="REPLACE",
         reason_code="SYN_AMOUNT_CORRECTION",
         reason_note="Deterministic demo rejection (no NAV coverage).",
@@ -192,6 +225,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="bitemporal-ledger reproducible pipeline (M7)")
     parser.add_argument("--database-url", default=os.environ.get("DATABASE_URL"))
     parser.add_argument("--output", default=str(ROOT / "RESULTS.md"))
+    parser.add_argument(
+        "--generator-config",
+        default=os.environ.get("GENERATOR_CONFIG", str(ROOT / "config" / "generator.yaml")),
+        help="Generator profile (default: canonical 1,000-account config)",
+    )
     parser.add_argument("--skip-import", action="store_true", help="Assume the NAV snapshot already exists (tests)")
     args = parser.parse_args(argv)
     dsn = args.database_url
@@ -228,6 +266,11 @@ def main(argv: list[str] | None = None) -> int:
             snapshot_id = cur.fetchone()[0]
             cur.execute("SELECT count(*) FROM core.nav_observation WHERE nav_snapshot_id = %s", (snapshot_id,))
             nav_rows = cur.fetchone()[0]
+            cur.execute(
+                "SELECT count(DISTINCT amfi_scheme_code) FROM core.nav_observation WHERE nav_snapshot_id = %s",
+                (snapshot_id,),
+            )
+            nav_schemes = cur.fetchone()[0]
     print(f"[pipeline] nav_snapshot_id={snapshot_id} nav_rows={nav_rows}", flush=True)
 
     ledger = LedgerService(dsn, snapshot_id)
@@ -243,7 +286,7 @@ def main(argv: list[str] | None = None) -> int:
         load_nav_index_from_db,
     )
 
-    generator_cfg = GeneratorConfig.from_yaml(ROOT / "config" / "generator.yaml")
+    generator_cfg = GeneratorConfig.from_yaml(args.generator_config)
     pool = eligible_scheme_codes_from_db(dsn, snapshot_id, generator_cfg.scheme_pool_min_observations, generator_cfg.scheme_pool_min_first_nav_date, generator_cfg.scheme_pool_max_paths)
     nav_index = load_nav_index_from_db(dsn, snapshot_id, pool)
     dataset = SyntheticGenerator(generator_cfg, nav_index).generate()
@@ -266,8 +309,11 @@ def main(argv: list[str] | None = None) -> int:
         report = ledger.ingest_m2_output(run_dir / "investors.json", run_dir / "accounts.json", run_dir / "transactions.json")
         print(f"[pipeline] ingest created={report.transactions_created} skipped={report.transactions_skipped}", flush=True)
         assert report.transactions_created + report.transactions_skipped == len(dataset.transactions)
+        return report
 
-    _step("ledger-ingest", _ingest)
+    ingest_report = _step("ledger-ingest", _ingest)
+    created = ingest_report.transactions_created
+    skipped = ingest_report.transactions_skipped
 
     # 4. Deterministic demo: snapshot/replay, applied correction, rejected correction, restatement.
     demo = _run_demo(dsn, snapshot_id, run_dir)
@@ -295,10 +341,86 @@ def main(argv: list[str] | None = None) -> int:
     digest = hashlib.sha256(results.encode("utf-8")).hexdigest()
     print(f"[pipeline] RESULTS.md written; sha256={digest}", flush=True)
     print(f"[pipeline] dataset_hash={dataset.manifest['hashes']['dataset']}", flush=True)
+
+    # Machine-readable run summary (deterministic: no timestamps, no paths).
+    summary = {
+        "project": "bitemporal-ledger",
+        "release": "1.0.0",
+        "results_sha256": digest,
+        "generator": {
+            "version": dataset.manifest.get("generator_version", "generator-1.0.0"),
+            "seed": dataset.manifest.get("seed", 20261109),
+            "config_sha256": dataset.manifest["config_hash"],
+            "dataset_sha256": dataset.manifest["hashes"]["dataset"],
+            "config_path": _relative_config_path(args.generator_config),
+            "counts": dataset.manifest.get("counts", {}),
+            "transactions_by_type": dataset.manifest.get("transaction_counts_by_type", {}),
+        },
+        "nav": {"snapshot_id": snapshot_id, "observations": nav_rows, "schemes": nav_schemes},
+        "demo": {
+            "applied_corrections": demo.get("applied", 0),
+            "rejected_corrections": rejected_count,
+            "archived_report_snapshots": snapshot_count,
+            "replay_status": demo.get("replay_status"),
+            "replay_after_correction": demo.get("original_replay_after_correction"),
+            "restatement_status": demo.get("restatement_status"),
+        },
+        "invariants": {
+            "accounts_checked": invariants.get("accounts_checked", 0),
+            "passed": invariants.get("passed", 0),
+            "failed": invariants.get("failed", 0),
+        },
+        "ingest": {"created": created, "skipped": skipped},
+    }
+    summary_path = ROOT / "results" / "pipeline_summary.json"
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print("[pipeline] pipeline_summary.json written", flush=True)
     if invariants["failed"]:
         print("[pipeline] FAILED: invariants did not pass everywhere", flush=True)
         return 1
     return 0
+
+
+def _render_e6() -> str:
+    path = ROOT / "results" / "E6_BENCHMARK.json"
+    if not path.exists():
+        return (
+            "- Benchmark artefact `results/E6_BENCHMARK.json` is not present in this "
+            "checkout, so no latency values are claimed."
+        )
+    data = json.loads(path.read_text(encoding="utf-8"))
+    env = data["environment"]
+    counts = data["row_counts"]
+    lines = [
+        f"- Environment: {env['platform']}; {env.get('processor') or env['machine']}; "
+        f"{env['cpu_count']} logical cores; {env.get('memory_gb')} GB RAM; "
+        f"{env['postgresql_version'].split(',')[0]} in Docker (`{env.get('docker_image', 'postgres:16')}`).",
+        f"- Rows: accounts {counts['account']:,}; business transactions {counts['txn_business']:,}; "
+        f"immutable revisions {counts['txn_revision']:,}; NAV observations {counts['nav_observation']:,}.",
+        f"- Runs: {data['runs']} measured + {data['warmup']} warm-up per knowledge point; "
+        "measured statement is the exact as-of SQL used by `LedgerService.get_as_of`.",
+        "",
+        "| Knowledge point | Visible revisions | Without index p50 (ms) | Without index p95 (ms) | With index p50 (ms) | With index p95 (ms) |",
+        "|---|---:|---:|---:|---:|---:|",
+    ]
+    for point in data["knowledge_points"]:
+        label = point["label"]
+        without = data["phases"]["without_index"][label]
+        with_index = data["phases"]["with_index"][label]
+        lines.append(
+            f"| {label} ({point['known_as_of'][:10]}) | {point['visible_revisions']:,} | "
+            f"{without['p50_ms']:.2f} | {without['p95_ms']:.2f} | "
+            f"{with_index['p50_ms']:.2f} | {with_index['p95_ms']:.2f} |"
+        )
+    lines += [
+        "",
+        f"- As-of result digests identical with and without the index: **{data['identical_results']}**.",
+        "- Full query plans (indexes used, execution time, buffer counts) and raw samples are in "
+        "`results/E6_BENCHMARK.json`; summary in `results/E6_BENCHMARK.md`.",
+        "- Latency is specific to the stated environment and is not a portable performance guarantee.",
+    ]
+    return "\n".join(lines)
 
 
 def _render_results(dataset, snapshot_id: int, nav_rows: int, invariants: dict, comparator: OverwriteComparator, demo: dict, applied_revisions: int, rejected_count: int, snapshot_count: int) -> str:
@@ -306,12 +428,13 @@ def _render_results(dataset, snapshot_id: int, nav_rows: int, invariants: dict, 
     config_hash = manifest["config_hash"]
     dataset_hash = manifest["hashes"]["dataset"]
     e1_case_count = 17  # unit fixture count in M5
+    e6_section = _render_e6()
     return f"""# Results
 
 | Field | Value |
 |---|---|
 | Project | `bitemporal-ledger` — Portfolio Accounting & Performance Engine |
-| Date | 2026-11-09 |
+| Date | 2026-11-11 (v1.0.0 verification baseline) |
 | Data | Synthetic accounts/transactions; real AMFI NAV inputs. Educational prototype; not investment advice. |
 | NAV snapshot | `amfi_nav_m1` (id {snapshot_id}); {nav_rows} observations |
 | Generator | `{manifest.get('generator_version', 'generator-1.0.0')}`; seed {manifest.get('seed', 20261109)}; config hash `{config_hash}` |
@@ -348,7 +471,7 @@ def _render_results(dataset, snapshot_id: int, nav_rows: int, invariants: dict, 
 
 ## E6 — As-of query performance
 
-- Deterministic repeated queries are asserted in M4; p50/p95 benchmarking is a future hardware-specific measurement and is not claimed here.
+{e6_section}
 
 ## E7 — Reproducibility
 
@@ -358,6 +481,9 @@ def _render_results(dataset, snapshot_id: int, nav_rows: int, invariants: dict, 
 ## E8/E9 — Sensitivity
 
 - Run from the frozen pre-registration in `config/sensitivity.yaml` (M8). See `results/sensitivity_summary.json`, `results/sensitivity_detail.csv`, `results/E9_COVERAGE.md`.
+- Coverage: 344 eligible schemes, 30 selected paths, 40 quarterly windows (1,200 path-window universe); 1,040 windows have a complete monthly SIP history. **E9 solved 1,040/1,040, excluded 0** under the documented solver domain.
+- The original 2026-11-09 run excluded 386 windows because of a terminal-valuation/backdating implementation defect. The frozen config was not changed; the defect, correction and preserved original evidence are documented in `results/E9_EXCLUSION_ANALYSIS.md` and `docs/E9_EXCLUSION_INVESTIGATION.md`.
+- Metric: **annualised XIRR minus period TWR over the same 12-month SIP window** (two different measures, not an error metric).
 
 ## Limitations
 

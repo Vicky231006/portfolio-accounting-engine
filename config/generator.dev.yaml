@@ -1,0 +1,106 @@
+# M2 generator configuration — SMALL DEVELOPMENT PROFILE (12 accounts).
+#
+# Use this profile for quick local development, unit/integration work and
+# dashboard iteration:
+#   $env:GENERATOR_CONFIG = "config/generator.dev.yaml"
+#   .\make.ps1 reproduce
+#
+# The canonical v1.0.0 dataset uses config/generator.yaml (1,000 accounts).
+# Both profiles share the same seed, rules, distributions and rounding policy;
+# only investor/account counts differ.
+#
+# Synthetic data only: investors, accounts, transactions and correction intents
+# are deterministically generated. They do not represent real clients,
+# accounts, AUM, user behaviour or real-world error rates.
+#
+# This file is the provenance input: it is hashed (canonical JSON, SHA-256)
+# into the dataset manifest. Changing any value changes the config hash
+# and therefore the recorded hashes.
+
+version: 1
+generator_version: "generator-1.0.0"
+seed: 20261109
+
+# Provenance: M1 NAV import snapshot providing real AMFI NAV inputs.
+# The generator performs read-only SELECTs against this snapshot to build
+# the scheme pool and NAV prices. The snapshot must exist.
+nav_snapshot_id: 3
+synthetic_label: "synthetic_accounts_real_nav"
+disclaimer: >-
+  Synthetic investors, accounts, transactions and correction intents;
+  real AMFI NAV inputs. Educational prototype; not investment advice,
+  not a production system, not a regulatory-compliance claim.
+
+investor_count: 8
+account_count: 12
+account_opening_start: "2013-01-01"
+account_opening_end: "2023-12-31"
+transaction_end: "2026-10-31"
+account_status_mix:
+  ACTIVE: 85
+  CLOSED: 15
+
+# Transaction-type distribution (integer weights, sum = 100).
+transaction_weights:
+  CONTRIBUTION: 10
+  WITHDRAWAL: 8
+  PURCHASE: 30
+  REDEMPTION: 12
+  SIP_INSTALMENT: 25
+  SWITCH: 15
+
+# Discretionary transactions are sampled uniformly in the account's active
+# period. SIP instalments are additional, monthly from the schedule start.
+discretionary_min_per_account: 30
+discretionary_max_per_account: 80
+sip_schedules_per_account_min: 1
+sip_schedules_per_account_max: 3
+sip_day_of_month_min: 1
+sip_day_of_month_max: 28
+sip_schedule_max_months: 120
+
+# Amounts in INR (integer sampling in paise; never binary float).
+amount_min: "5000.00"
+amount_max: "200000.00"
+withdrawal_min: "2000.00"
+withdrawal_max: "100000.00"
+purchase_min: "5000.00"
+purchase_max: "200000.00"
+sip_amount_min: "5000.00"
+sip_amount_max: "50000.00"
+initial_contribution_min: "50000.00"
+initial_contribution_max: "500000.00"
+
+# Redemption / switch sizing: units = fraction of current estimated
+# holdings, sampled as an integer percent in this range.
+redeem_fraction_percent_min: 10
+redeem_fraction_percent_max: 80
+
+# Correction intents (not applied in M2; see D-039).
+correction_rate_percent: 7
+correction_type_weights:
+  REPLACE: 60
+  VOID: 20
+  REVERSE_AND_REPLACE: 20
+backdating_delay_days_min: 1
+backdating_delay_days_max: 30
+correction_eligible_types: ["CONTRIBUTION", "WITHDRAWAL", "PURCHASE", "REDEMPTION", "SIP_INSTALMENT", "SWITCH"]
+synthetic_operator_count: 5
+
+# Simulated clock (D-038, D-021).
+transaction_recorded_hour_utc: 18
+transaction_recorded_minute_window: 120
+correction_recorded_hour_utc: 11
+correction_recorded_minute_window: 240
+
+# Scheme pool eligibility (matches sensitivity pre-registration).
+scheme_pool_min_observations: 750
+scheme_pool_min_first_nav_date: "2014-01-01"
+scheme_pool_max_paths: 30
+
+# Rounding (D-026): identical to the approved methodology.
+rounding:
+  amount_dp: 2
+  units_dp: 3
+  units_mode: "ROUND_DOWN"
+  amount_mode: "ROUND_HALF_UP"

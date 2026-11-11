@@ -15,6 +15,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from decimal import Decimal
 
+from bitemporal_ledger.ledger.models import VisibleRevision
 from bitemporal_ledger.ledger.service import LedgerService
 from bitemporal_ledger.valuation.service import ValuationService
 
@@ -43,9 +44,16 @@ def run_invariants(
     violations: list[dict] = []
     stale_accounts = 0
     accounts = _all_accounts(dsn)
+    # Load the as-of revision set once and group it by account so each account is derived from an
+    # in-memory slice instead of rescanning the full ledger per account (M7 invariant sweep).
+    visible = ledger.get_as_of(known_as_of)
+    by_account: dict[int, list[VisibleRevision]] = {}
+    for txn in visible:
+        by_account.setdefault(txn.account_id, []).append(txn)
     for account_id in accounts:
+        txns = by_account.get(account_id, [])
         try:
-            positions = valuation.positions(account_id, valid_date, known_as_of)
+            positions = valuation.positions(account_id, valid_date, known_as_of, visible=txns)
         except Exception as exc:  # keep collecting across accounts
             reason = getattr(exc, "reason_code", type(exc).__name__)
             violations.append({"account_id": account_id, "check": "positions_derivable", "reason": reason, "message": str(exc)})
@@ -55,7 +63,7 @@ def run_invariants(
             assert isinstance(holding.units, Decimal)
             assert holding.units >= 0
         try:
-            valuation.value(account_id, valid_date, known_as_of)
+            valuation.value(account_id, valid_date, known_as_of, visible=txns)
         except Exception as exc:
             reason = getattr(exc, "reason_code", type(exc).__name__)
             if reason in ("STALE_BEYOND_LIMIT", "MISSING_NAV"):

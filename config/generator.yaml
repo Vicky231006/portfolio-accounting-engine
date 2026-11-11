@@ -1,4 +1,4 @@
-# M2 Generator configuration (PRD v2.0 §5.2, FR-B1; DECISIONS D-033–D-039).
+# M2 generator configuration — CANONICAL v1.0.0 DATASET (1,000 accounts).
 #
 # Synthetic data only: investors, accounts, transactions and correction intents
 # are deterministically generated. They do not represent real clients,
@@ -22,8 +22,8 @@ disclaimer: >-
   real AMFI NAV inputs. Educational prototype; not investment advice,
   not a production system, not a regulatory-compliance claim.
 
-investor_count: 8
-account_count: 12
+investor_count: 600
+account_count: 1000
 account_opening_start: "2013-01-01"
 account_opening_end: "2023-12-31"
 transaction_end: "2026-10-31"

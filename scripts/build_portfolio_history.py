@@ -10,13 +10,12 @@ import calendar
 import os
 import sys
 from datetime import date, datetime, timezone
-from decimal import Decimal
 
 import psycopg
 
 sys.path.insert(0, "/app/src")
 from bitemporal_ledger.ledger.service import LedgerService
-from bitemporal_ledger.valuation.service import ValuationService, ValuationError, InvariantError
+from bitemporal_ledger.valuation.service import InvariantError, ValuationError, ValuationService
 
 DSN = os.environ["DATABASE_URL"]
 RUN_K = datetime(2026, 11, 9, 12, 0, 0, tzinfo=timezone.utc)

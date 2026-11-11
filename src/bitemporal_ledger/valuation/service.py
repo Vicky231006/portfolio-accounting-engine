@@ -13,6 +13,7 @@ from bitemporal_ledger.ledger.derivation import (
     redemption_proceeds,
     switch_derived,
 )
+from bitemporal_ledger.ledger.models import VisibleRevision
 from bitemporal_ledger.ledger.service import LedgerService
 from bitemporal_ledger.valuation.models import (
     Holding,
@@ -45,16 +46,23 @@ class ValuationService:
         row = cur.fetchone()
         return Decimal(row[0]) if row else None
 
-    def _latest_nav(self, scheme_code: str, valid_date: date) -> NavPrice | None:
-        with psycopg.connect(self.dsn) as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    "SELECT nav, nav_date FROM core.nav_observation"
-                    " WHERE nav_snapshot_id = %s AND amfi_scheme_code = %s AND nav_date <= %s"
-                    " ORDER BY nav_date DESC LIMIT 1",
-                    (self.nav_snapshot_id, scheme_code, valid_date),
-                )
-                row = cur.fetchone()
+    def _latest_nav(self, scheme_code: str, valid_date: date, *, conn=None) -> NavPrice | None:
+        """Latest NAV at or before ``valid_date`` for the M1 snapshot (optionally over a caller-owned connection)."""
+        if conn is None:
+            with psycopg.connect(self.dsn) as new_conn:
+                with new_conn.cursor() as cur:
+                    return self._nav_latest(cur, scheme_code, valid_date)
+        with conn.cursor() as cur:
+            return self._nav_latest(cur, scheme_code, valid_date)
+
+    def _nav_latest(self, cur, scheme_code: str, valid_date: date) -> NavPrice | None:
+        cur.execute(
+            "SELECT nav, nav_date FROM core.nav_observation"
+            " WHERE nav_snapshot_id = %s AND amfi_scheme_code = %s AND nav_date <= %s"
+            " ORDER BY nav_date DESC LIMIT 1",
+            (self.nav_snapshot_id, scheme_code, valid_date),
+        )
+        row = cur.fetchone()
         if row is None:
             return None
         price, price_date = Decimal(row[0]), row[1]
@@ -70,10 +78,23 @@ class ValuationService:
 
     # ---------------------------------------------------------- positions
 
-    def positions(self, account_id: int, valid_date: date, known_as_of: datetime) -> PositionsResult:
-        """Derive (cash, units) as of ``valid_date`` using only revisions known at ``known_as_of``."""
+    def positions(
+        self,
+        account_id: int,
+        valid_date: date,
+        known_as_of: datetime,
+        *,
+        visible: list[VisibleRevision] | None = None,
+    ) -> PositionsResult:
+        """Derive (cash, units) as of ``valid_date`` using only revisions known at ``known_as_of``.
+
+        ``visible`` lets a caller that already holds the as-of revision set (for example an
+        account-grouped sweep) pass it in instead of rescanning the ledger per account; when it is
+        omitted the ledger is queried as of ``known_as_of``.
+        """
         known_as_of = self.ledger._as_utc(known_as_of)
-        visible = self.ledger.get_as_of(known_as_of)
+        if visible is None:
+            visible = self.ledger.get_as_of(known_as_of)
         txns = [txn for txn in visible if txn.account_id == account_id]
         legs: list[tuple[date, int, str, Decimal, Decimal, str | None]] = []
         with psycopg.connect(self.dsn) as conn:
@@ -153,9 +174,17 @@ class ValuationService:
 
     # ---------------------------------------------------------- valuation
 
-    def value(self, account_id: int, valid_date: date, known_as_of: datetime, stale_limit_days: int = DEFAULT_STALE_LIMIT_DAYS) -> ValuationResult:
+    def value(
+        self,
+        account_id: int,
+        valid_date: date,
+        known_as_of: datetime,
+        stale_limit_days: int = DEFAULT_STALE_LIMIT_DAYS,
+        *,
+        visible: list[VisibleRevision] | None = None,
+    ) -> ValuationResult:
         """Value the as-of position with the M1 snapshot (see D-050/D-051)."""
-        positions = self.positions(account_id, valid_date, known_as_of)
+        positions = self.positions(account_id, valid_date, known_as_of, visible=visible)
         valued: list[ValuedHolding] = []
         fresh_value = Decimal("0")
         stale_value = Decimal("0")

@@ -1,5 +1,10 @@
 # v1.0.0 Release-Candidate — Final Report
 
+> **SUPERSEDED (2026-11-11).** This document records the release-candidate
+> verification of 2026-11-10 and is retained as historical evidence. It is
+> **not** the current release status. The final verified v1.0.0 report is
+> [`docs/V1_0_0_FINAL_REPORT.md`](V1_0_0_FINAL_REPORT.md).
+
 **Date:** 2026-11-10  
 **Status:** **Release candidate (v1.0.0 RC)** — evidence-based, with explicit limitations. **No push, no publish, no remote tag, no GitHub release created** (and none must be created without Vicky’s explicit approval).  
 **Scope:** M0–M10 per PRD v2.0. **Dashboard frozen (M9 visually accepted by Vicky, 2026-11-10); M8 sensitivity frozen. No further feature development and no financial/methodology/M8/dashboard-visual changes.**

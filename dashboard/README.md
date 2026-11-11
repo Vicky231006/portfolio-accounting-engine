@@ -6,7 +6,7 @@
   - Page 1: portfolio overview (synthetic account/ledger counts, transaction mix, honest disclosure of unmaterialised valuation/TWR/XIRR/snapshots).  
   - Page 2: account drilldown scope (accounts, ledger rows, Power BI filter requirements).  
   - Page 3: restatements & audit with **correct distinctions** — original revisions vs applied correction operations vs rejected corrections vs archived snapshots (no `txn_group_id`-as-correction proxy; 0/0/0 reported honestly).  
-  - Page 4: M8 sensitivity study (344 eligible / 30 selected, 40 windows, 1,040 eligible, 11,436 detail rows, E9 n=654 solved gaps / 386 excluded) from `results/sensitivity_detail.csv`, `results/sensitivity_summary.json`, `results/E9_COVERAGE.md`.  
+  - Page 4: M8 sensitivity study (344 eligible / 30 selected, 40 windows, 1,040 eligible, 11,436 detail rows, E9 **1,040 / 1,040** solved with **0** excluded after the terminal-valuation/backdating defect correction) from `results/sensitivity_detail.csv`, `results/sensitivity_summary.json`, `results/E9_COVERAGE.md`.  
 - **`docs/screenshots/dashboard_preview.html`** — same rendered preview (for review/screenshots context).
 
 Regenerate: `python scripts/render_dashboard.py`
