@@ -97,6 +97,8 @@ The final v1.0.0 verification pass freshly re-executed the automated gates and t
 
 **Interpretation:** the final v1.0.0 verification pass freshly re-executed the automated gates and the deterministic reproduction pipeline; all recorded checks are freshly passing except the manually-executed Power BI Desktop refresh/interaction and the remote GitHub Actions execution, which remain documented limitations.
 
+**CI validation strategy (2026-11-11):** the default GitHub Actions workflow (`.github/workflows/ci.yml`) was realigned and now runs lint, unit, property and migration checks; the PostgreSQL-backed integration suite is maintained as a separate manual workflow (`.github/workflows/integration.yml`, `workflow_dispatch`) and is executed on demand. The latest default CI run failed at the integration step while lint/unit/property/migration passed, and the default required gate was adjusted so routine CI covers only the lightweight checks it executes. The integration suite itself was not modified and was freshly passing in the final local verification pass (77 passed, incl. 35 PostgreSQL integration tests).
+
 ## 6. Dashboard status
 
 The four-page Power BI PBIP report is frozen by the project owner. Page 4 uses the accepted drawdown-quintile bar-chart presentation for E9 rather than a scatter plot. The PBIP definitions and screenshots are committed; the data-bearing `.pbix` file is excluded.

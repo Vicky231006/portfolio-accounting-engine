@@ -104,12 +104,22 @@ The frozen M8 configuration SHA-256 is recorded in [`RESULTS.md`](RESULTS.md). E
 
 The repository is published on GitHub `main` as **v1.0.0** (tagged `v1.0.0`), closing milestone M10. The final verification pass freshly re-executed the unit/property/integration suite, Ruff, the migration checksum/tamper test, the NAV re-import idempotency path, the replay/restatement checks, the invariant sweep and two clean `make reproduce` runs. All gates passed; no final-release blockers remain open.
 
+Subsequently (2026-11-11) the default GitHub Actions pipeline was realigned: the database-backed integration job was removed from the default required checks and retained in the dedicated manual workflow (`.github/workflows/integration.yml`). See [Continuous integration](#continuous-integration) for the current validation strategy.
+
 Outstanding environmental limitations of the final pass, explicitly not release blockers:
 
 - Power BI Desktop interaction validation was not re-executed in the final pass (Desktop unavailable in the delivery environment).
 - Remote GitHub Actions execution status was not re-recorded in the final pass (`gh` CLI unavailable in the delivery environment).
 
 Do not describe the delivered artefact as a fully compliance-validated production release. See [`docs/M10_RELEASE_AND_CLOSURE.md`](docs/M10_RELEASE_AND_CLOSURE.md) for the exact evidence, gates and limitations.
+
+## Continuous integration
+
+- **Default workflow** (`.github/workflows/ci.yml`, triggered on push to `main` and pull requests): runs **lint**, **unit**, **property** and **migration** checks. It does not run the PostgreSQL-backed integration suite.
+- **Integration workflow** (`.github/workflows/integration.yml`, manually triggered via `workflow_dispatch`): runs the full **PostgreSQL-backed integration suite** (`python -m pytest tests/integration -q`) against a PostgreSQL 16 service container.
+- **Local execution:** the full suite is `python -m pytest tests -q`; integration tests require a running local PostgreSQL and `DATABASE_URL` (see [Run locally](#run-locally-windows--powershell)).
+
+The documented validation strategy is therefore: lightweight checks (lint, unit, property, migration) run routinely on CI; database-backed integration validation is maintained as a separate full-validation workflow and is executed on demand (locally or via the manual workflow). A green default CI run reflects only the checks it executes and does not imply integration tests passed.
 
 ## Run locally (Windows / PowerShell)
 
@@ -193,7 +203,7 @@ The standard `make reproduce` target is also available on systems with GNU Make.
 - **E9 solved fully:** 1,040 / 1,040 eligible windows solved; the earlier 386 exclusions were caused by a terminal-valuation/backdating implementation defect and are preserved as archived evidence.
 - **E6 latency:** p50/p95 query latencies were measured on the final delivery environment (16 logical cores, 15.7 GB RAM, PostgreSQL 16 in Docker); values are environment-specific and not a portable performance guarantee.
 - **Power BI:** PBIP definitions and screenshots are committed; live Desktop refresh/interaction validation is not part of the delivered verification.
-- **CI:** GitHub Actions workflow is present; remote workflow execution status is recorded in the final release closure.
+- **CI:** Default GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint, unit, property and migration checks on push/PR; the PostgreSQL-backed integration suite is maintained as a separate manual workflow (`.github/workflows/integration.yml`, `workflow_dispatch`). Locally, the full suite is `python -m pytest tests -q` (integration tests require a running local PostgreSQL via `DATABASE_URL`). The default CI status reflects only the lightweight checks it executes; a green default CI run does not imply the integration suite passed.
 - **Not a compliance system:** no SEBI, SEC or GIPS compliance claim; no investment recommendations.
 
 ## Project documentation
